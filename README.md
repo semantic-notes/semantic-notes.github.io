@@ -10,8 +10,9 @@ rule‑based suggestions, and the user can opt into richer OWL RL inference. A
 Firebase backend offers synchronization and offline persistence, while the
 application is deployed as a static Progressive Web App via GitHub Pages.
 
-## Quickstar
-````ba install
+## Quickstart
+```bash
+pnpm install
 cp .env.example .env          # add your Firebase configuration
 pnpm dev                      # runs Vite dev server
 pnpm test                     # runs unit tests, SHACL validation and SPARQL invariants
