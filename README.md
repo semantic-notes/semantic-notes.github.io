@@ -32,4 +32,4 @@ pnpm run build                # produces static assets into `dist/`
 | `scripts/` | Build/validation helpers |
 | `tests/` | Vitest tests and SPARQL invariants |
 
-For more information see `SPECS.md`, `MODELNG_GUIDE.md` and `AI_DEV.md`.
+For more information see `SPECS.md`, `MODELING_GUIDE.md` and `AI_DEV.md`.

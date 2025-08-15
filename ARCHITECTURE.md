@@ -16,4 +16,4 @@ Semantic Notes is organized into three main layers:
 
 3. **Tooling** — Located in the `scripts/` and `tests/` folders. These contain scripts for dataset export/import, context generation and automated tests. Continuous integration is configured via GitHub Actions in `.github/workflows/`.
 
-Refer to `MODELNG_GUIDE.md` for modeling conventions and `AI_DEV.md` for AI assistance policy.
+Refer to `MODELING_GUIDE.md` for modeling conventions and `AI_DEV.md` for AI assistance policy.
