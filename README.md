@@ -36,3 +36,8 @@ Directories marked as “planned” are not yet implemented.
 | `docs/` | Documentation site |
 
 For more information see `SPECS.md`, `MODELING_GUIDE.md` and `AI_DEV.md`.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
