@@ -21,15 +21,18 @@ pnpm run build                # produces static assets into `dist/`
 
 ## Repository layout
 
+Directories marked as “planned” are not yet implemented.
+
 | Path | Purpose |
 |------|---------|
-| `app/` | React + TypeScript PWA (Vite) |
-| `content/ontology/` | OWL classes/properties (TriG/TTL) |
-| `content/skos/` | SKOS concepts (TriG/TTL) |
-| `content/shapes/` | SHACL shapes |
-| `content/rules/` | Custom reasoning rules (N3) |
-| `content/notes/` | Markdown notes with embedded Turtle |
-| `scripts/` | Build/validation helpers |
-| `tests/` | Vitest tests and SPARQL invariants |
+| `app/` | React + TypeScript PWA (planned) |
+| `content/ontology/` | OWL classes/properties (TriG/TTL, planned) |
+| `content/skos/` | SKOS concepts (TriG/TTL, planned) |
+| `content/shapes/` | SHACL shapes (planned) |
+| `content/rules/` | Custom reasoning rules (N3, planned) |
+| `content/notes/` | Markdown notes with embedded Turtle (planned) |
+| `scripts/` | Build/validation helpers (planned) |
+| `tests/` | Vitest tests and SPARQL invariants (planned) |
+| `docs/` | Documentation site |
 
 For more information see `SPECS.md`, `MODELING_GUIDE.md` and `AI_DEV.md`.
