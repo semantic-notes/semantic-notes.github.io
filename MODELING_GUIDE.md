@@ -51,3 +51,25 @@ For each conceptual idea you model, create **two IRIs**:
 
 Record provenance using PROV-O:
 `prov:wasDerivedFrom`, `prov:generatedAtTime`, `prov:wasAssociatedWith` and related properties. This helps trace who made what change and when.
+
+## Annotations
+
+Markdown notes can carry Web Annotations with Turtle describing their semantics:
+
+```markdown
+Breathing slowly eases anxiety.
+```
+
+```ttl
+[] a oa:Annotation ;
+   oa:hasTarget ex:BreathingTechnique,
+               ex:BreathingTechniqueConcept ;
+   oa:hasBody [
+     a cnt:ContentAsText ;
+     cnt:chars "Breathing slowly eases anxiety."@en ;
+   ] .
+```
+
+The annotation links the note to the OWL class `ex:BreathingTechnique` and its SKOS concept `ex:BreathingTechniqueConcept`.
+
+Store each annotation as a Markdown file (e.g., under `content/notes/`) with the text and Turtle blocks together. During `pnpm test`, the Turtle is extracted and validated through SHACL shapes and SPARQL invariants to ensure annotations remain consistent and dual IRIs stay synchronized.
