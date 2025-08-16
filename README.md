@@ -21,23 +21,23 @@ pnpm run build                # produces static assets into `dist/`
 
 ## Repository layout
 
-Directories marked as “planned” are not yet implemented.
+Some directories may contain placeholder implementations; features are under active development.
 
 | Path | Purpose |
 |------|---------|
-| `app/` | React + TypeScript PWA (planned) |
-| `content/ontology/` | OWL classes/properties (TriG/TTL, planned) |
-| `content/skos/` | SKOS concepts (TriG/TTL, planned) |
-| `content/shapes/` | SHACL shapes (planned) |
-| `content/rules/` | Custom reasoning rules (N3, planned) |
-| `content/notes/` | Markdown notes with embedded Turtle (planned) |
-| `scripts/` | Build/validation helpers (planned) |
-| `tests/` | Vitest tests and SPARQL invariants (planned) |
-| `docs/` | Documentation site |
+| `app/` | React + TypeScript PWA (frontend) |
+| `content/ontology/` | OWL classes, properties and individuals (TriG/TTL) |
+| `content/skos/` | SKOS concepts and taxonomy (TriG/TTL) |
+| `content/shapes/` | SHACL shapes used for validation |
+| `content/rules/` | Rule packs for inference and suggestions (N3/EYE) |
+| `content/notes/` | Markdown notes with embedded Turtle |
+| `scripts/` | Build and validation helpers (dataset import/export, context generation, namespace rewrite, SHACL & SPARQL checks) |
+| `tests/` | Vitest tests, SHACL validation and SPARQL invariants |
+| `docs/` | Documentation and ADRs |
 
-For more information see `SPECS.md`, `MODELING_GUIDE.md` and `AI_DEV.md`.
+For more information see `SPECS.md`, `MODELING_GUIDE.md`, `ARCHITECTURE.md`, `AI_DEV.md`, `TESTING.md` and `AGENTS.md`.
 
-## License
 
+|
 This project is licensed under the [MIT License](LICENSE).
 
