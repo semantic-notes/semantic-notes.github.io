@@ -9,15 +9,42 @@ Semantic Notes uses multiple layers of testing to protect against regressions:
 
 All of the above run via `pnpm test` and are executed in continuous integration. Pull requests are blocked if any checks fail.
 
-## Example invariant
+## New feature checklist
 
-This ASK query ensures that every OWL class is associated with a SKOS concept via `ex:denotesConcept`:
+When introducing new functionality, ensure:
+
+- [ ] Unit tests cover the feature.
+- [ ] SHACL shapes validate affected data.
+- [ ] SPARQL invariants capture expected logical constraints.
+
+Automation scripts in [`scripts/`](scripts/) can help run these checks consistently.
+
+## Example invariants
+
+### Dual IRIs remain synchronized
 
 ```sparql
 ASK WHERE {
   FILTER NOT EXISTS {
     ?c a <http://www.w3.org/2002/07/owl#Class> .
-    FILTER NOT EXISTS { ?c <https://w3id.org/biosyncare/ont#denotesConcept> ?cc . }
+    FILTER NOT EXISTS {
+      ?c <https://w3id.org/biosyncare/ont#denotesConcept> ?cc .
+      ?cc <http://www.w3.org/2004/02/skos/core#exactMatch> ?c .
+    }
+  }
+}
+```
+
+### Note attachments are complete
+
+```sparql
+ASK WHERE {
+  FILTER NOT EXISTS {
+    ?ann a <http://www.w3.org/ns/oa#Annotation> .
+    FILTER (
+      ! EXISTS { ?ann <http://www.w3.org/ns/oa#hasTarget> ?t } ||
+      ! EXISTS { ?ann <http://www.w3.org/ns/oa#hasBody> ?b }
+    )
   }
 }
 ```
