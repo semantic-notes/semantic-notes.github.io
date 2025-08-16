@@ -16,4 +16,22 @@ Semantic Notes is organized into three main layers:
 
 3. **Tooling** — Located in the `scripts/` and `tests/` folders. These contain scripts for dataset export/import, context generation and automated tests. Continuous integration is configured via GitHub Actions in `.github/workflows/`.
 
+## Reasoning and validation
+
+- Lightweight RDFS reasoning runs in the browser.
+- Optional OWL 2 RL materialization via HyLAR.
+- Custom EYE rule packs execute client-side.
+- No server-side reasoning.
+
+## Scripts and automation
+
+The following scripts run in CI and locally:
+
+- `scripts/export-dataset.ts`
+- `scripts/import-dataset.ts`
+- `scripts/build-contexts.ts`
+- `scripts/rewriteNamespace.ts`
+- `scripts/run-shacl.mjs`
+- `scripts/run-invariants.mjs`
+
 Refer to `MODELING_GUIDE.md` for modeling conventions and `AI_DEV.md` for AI assistance policy.
