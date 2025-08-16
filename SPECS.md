@@ -5,7 +5,7 @@
 - Create/edit OWL classes, properties and individuals; build restrictions (some, only, min/max/qualified cardinality).
 - Mirror SKOS concepts for each OWL class (dual IRIs) and link them via `ex:denotesConcept` and `skos:exactMatch`.
 - Attach notes as Web Annotations (`oa:Annotation`) targeting any IRI; notes can be plain text or RDF.
-- Import/export TriG datasets as whole or per-graph; manifests include checksums.
+- Import/export TriG datasets as whole or per-graph; exports include a manifest recording each named graph’s IRI, type, and checksum. `scripts/import-dataset.ts` validates and merges data while enforcing SHACL and SPARQL invariants.
 - AI assistance (local-first) provides label suggestions, natural language to SPARQL drafts and mapping hints.
 
 ## Non-functional
@@ -15,6 +15,8 @@
 - Mobile-first UI with command palette and editable entity sheets.
 - Security via Firebase Auth and App Check; per-workspace access control rules in Firestore and Storage.
 
+> **Note**: The base IRI is configurable. `scripts/rewriteNamespace.ts` updates `owl:versionIRI` and rewrites IRIs accordingly, with redirects ideally served via `w3id.org`.
+
 ## Data layout
 
 - **Ontology**: `content/ontology/*.trig` contains OWL classes, properties and individuals.
@@ -22,3 +24,4 @@
 - **Shapes**: `content/shapes/*.ttl` contains SHACL node and property shapes for validation.
 - **Rules**: `content/rules/*.n3` contains custom inference rules (EYE or Notation3).
 - **Notes**: `content/notes/*.md` contains Markdown with embedded Turtle blocks that are extracted into RDF.
+- **Contexts**: `content/contexts/*.jsonld` contains generated JSON-LD contexts.
