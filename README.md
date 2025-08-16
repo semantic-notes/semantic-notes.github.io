@@ -37,7 +37,5 @@ Some directories may contain placeholder implementations; features are under act
 
 For more information see `SPECS.md`, `MODELING_GUIDE.md`, `ARCHITECTURE.md`, `AI_DEV.md`, `TESTING.md` and `AGENTS.md`.
 
-
-|
 This project is licensed under the [MIT License](LICENSE).
 
