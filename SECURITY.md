@@ -9,6 +9,7 @@ Semantic Notes is a client-side application that synchronizes data via Firebase.
 3. **Environment variables**: API keys and other secrets are provided via environment variables (`.env`). Never commit secrets to the repository. An example `.env.example` file is provided.
 4. **Offline persistence**: Firestore is used with offline persistence enabled; data is cached locally and synced when connectivity is restored. No sensitive data is transmitted to external APIs by default.
 5. **AI services**: Cloud AI integrations are opt-in and disabled by default. When enabled, they include provenance metadata and respect configured budgets.
+6. **Stable base IRIs**: Use a stable, redirectable base IRI (e.g., a `w3id.org` prefix) to protect consumers from link rot and support long-term IRI persistence.
 
 ## Reporting vulnerabilities
 
