@@ -73,3 +73,77 @@ Breathing slowly eases anxiety.
 The annotation links the note to the OWL class `ex:BreathingTechnique` and its SKOS concept `ex:BreathingTechniqueConcept`.
 
 Store each annotation as a Markdown file (e.g., under `content/notes/`) with the text and Turtle blocks together. During `pnpm test`, the Turtle is extracted and validated through SHACL shapes and SPARQL invariants to ensure annotations remain consistent and dual IRIs stay synchronized.
+
+## Domains and ranges
+
+When modeling object or datatype properties, specify their domain and range to describe the classes of subjects and objects they connect. Use `rdfs:domain` to indicate the expected subject type and `rdfs:range` to indicate the expected value type. Avoid over‑constraining: domain and range assertions cause inferences about every use of the property. If a property applies to several classes, either leave the domain unspecified or use multiple `rdfs:domain` statements. Prefer SHACL shapes for editorial constraints when domain/range semantics are not strictly logical.
+
+Example:
+
+```ttl
+ex:hasTempo a owl:DatatypeProperty ;
+  rdfs:domain ex:Stimulus ;
+  rdfs:range xsd:decimal .
+```
+
+## Inverse properties
+
+Use `owl:inverseOf` to define pairs of object properties that are inverses of one another. For example, if `x ex:hasPart y` then `y ex:isPartOf x`. Defining inverses helps the reasoner infer relationships automatically. Only declare inverses for one‑to‑one or one‑to‑many relationships that are truly reciprocal. Do not declare inverse properties for datatype properties.
+
+Example:
+
+```ttl
+ex:hasPart a owl:ObjectProperty ;
+  owl:inverseOf ex:isPartOf .
+
+ex:isPartOf a owl:ObjectProperty .
+```
+
+## Property characteristics
+
+OWL provides property characteristics that influence reasoning:
+
+- **Functional** (`owl:FunctionalProperty`): a subject has at most one value for this property.
+- **Inverse functional** (`owl:InverseFunctionalProperty`): a value identifies at most one subject (useful for unique identifiers).
+- **Symmetric** (`owl:SymmetricProperty`): if `x P y` then `y P x`.
+- **Transitive** (`owl:TransitiveProperty`): if `x P y` and `y P z` then `x P z`.
+- **Reflexive** (`owl:ReflexiveProperty`): each individual is related to itself.
+- **Irreflexive** (`owl:IrreflexiveProperty`): no individual is related to itself.
+- **Asymmetric** (`owl:AsymmetricProperty`): if `x P y` then `y P x` is prohibited.
+
+Use these characteristics only when they reflect real invariants. Misusing them can lead to unintended inferences or inconsistency.
+
+## Disjoint classes
+
+To assert that two classes share no individuals in common, use `owl:disjointWith`. Declaring disjointness helps detect modeling errors and improves reasoning efficiency. For example, a chemical stimulus and an electrical stimulus are mutually exclusive categories.
+
+```ttl
+ex:ChemicalStimulation owl:disjointWith ex:ElectricalStimulation .
+```
+
+You can also declare disjoint unions (`owl:disjointUnionOf`) when a class is partitioned into a set of disjoint subclasses whose union exhausts the parent class.
+
+## Cardinality restrictions
+
+Cardinality restrictions constrain the number of times a property may occur. The common forms are:
+
+- `owl:minCardinality` / `owl:minQualifiedCardinality`: at least _n_ values (optionally of a given class).
+- `owl:maxCardinality` / `owl:maxQualifiedCardinality`: at most _n_ values.
+- `owl:cardinality` / `owl:qualifiedCardinality`: exactly _n_ values.
+
+Qualified cardinality restrictions (e.g. `owl:minQualifiedCardinality`) allow you to specify both the number and the type of the value. Use cardinality restrictions judiciously: they express necessary conditions, not editorial advice. For user interface guidance, prefer SHACL shapes.
+
+Example:
+
+```ttl
+ex:Session rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty ex:primaryDevice ;
+  owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+  owl:onClass ex:Device
+] .
+```
+
+## Changing the base IRI
+
+All internal IRIs are minted under a configurable base prefix (e.g. `https://w3id.org/biosyncare/ont#`). If you need to move the ontology to a new domain or namespace, run the `rewriteNamespace.ts` script in `scripts/` to rewrite all IRIs in your dataset. This script takes an input dataset and replaces the old base with the new one. Update the `owl:versionIRI` and provide redirects from old IRIs to new ones (a `w3id.org` prefix is recommended for stability).
