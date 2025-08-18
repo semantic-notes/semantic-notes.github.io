@@ -1,0 +1,19 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix exo: <https://example.org/ontology/> .
+@prefix exr: <https://example.org/rules/> .
+@prefix altr: <http://alt.example.org/rules/> .
+@prefix ex: <https://example.org/vocab/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+exr:ExampleInference a sh:NodeShape ;
+    owl:sameAs altr:ExampleInference ;
+    sh:targetClass skos:Concept ;
+    sh:rule [
+        a sh:TripleRule ;
+        sh:subject sh:this ;
+        sh:predicate ex:relatedTo ;
+        sh:object exo:Example ;
+    ] .
+
+altr:ExampleInference owl:sameAs exr:ExampleInference .
