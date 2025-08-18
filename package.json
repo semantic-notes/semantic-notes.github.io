@@ -5,15 +5,17 @@
   "scripts": {
     "dev": "pnpm --dir app dev",
     "build": "pnpm --dir app build",
-    "test": "ts-node tests/rewriteNamespace.test.ts && node scripts/run-shacl.mjs && node scripts/run-invariants.mjs && pnpm --dir app test"
+    "test": "vitest run && node scripts/run-shacl.mjs && node scripts/run-invariants.mjs && pnpm --dir app test"
   },
   "devDependencies": {
     "@comunica/query-sparql": "^4.3.0",
     "@types/node": "^24.3.0",
+    "@vitest/ui": "^3.2.4",
     "n3": "^1.26.0",
     "rdf-ext": "^2.5.2",
     "rdf-validate-shacl": "^0.6.5",
     "ts-node": "^10.9.1",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.4"
   }
 }
