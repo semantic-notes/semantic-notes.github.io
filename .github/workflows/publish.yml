@@ -33,7 +33,7 @@ jobs:
           pnpm vitest run
           node scripts/run-shacl.mjs
           node scripts/run-invariants.mjs
-          pnpm --dir app vitest run
+          pnpm --dir=app vitest run
       - name: Build app
         run: pnpm build
       - name: Upload artifact
