@@ -19,6 +19,21 @@ pnpm test                     # runs unit tests, SHACL validation and SPARQL inv
 pnpm run build                # produces static assets into `dist/`
 ```
 
+## Base IRI
+
+Administrators can configure the namespace used when minting new IRIs via the
+`BASE_IRI` environment variable. Add `BASE_IRI` to your `.env` file or hosting
+configuration:
+
+```bash
+BASE_IRI="https://example.org/iri#"
+```
+
+If unset, the application falls back to `https://{app-url}/iri#`, where
+`{app-url}` is the deployed origin. For long‑term stability, prefer a
+`https://w3id.org/` prefix that redirects to your deployment; this decouples the
+published IRIs from the underlying domain and eases future migrations.
+
 ## Repository layout
 
 Some directories may contain placeholder implementations; features are under active development.

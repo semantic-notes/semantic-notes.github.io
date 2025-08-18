@@ -15,7 +15,10 @@
 - Mobile-first UI with command palette and editable entity sheets.
 - Security via Firebase Auth and App Check; per-workspace access control rules in Firestore and Storage.
 
-> **Note**: The base IRI is configurable. `scripts/rewriteNamespace.ts` updates `owl:versionIRI` and rewrites IRIs accordingly, with redirects ideally served via `w3id.org`.
+> **Note**: The base IRI is configurable. See the [README](README.md#base-iri)
+> for setting `BASE_IRI` and choosing a stable prefix. The
+> [Modeling&nbsp;Guide](MODELING_GUIDE.md#changing-the-base-iri) details the
+> namespace rewrite workflow and redirect setup.
 
 ## Data layout
 
