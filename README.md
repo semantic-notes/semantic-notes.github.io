@@ -11,13 +11,40 @@ Firebase backend offers synchronization and offline persistence, while the
 application is deployed as a static Progressive Web App via GitHub Pages.
 
 ## Quickstart
-```bash
-pnpm install
-cp .env.example .env          # add your Firebase configuration
-pnpm dev                      # runs Vite dev server
-pnpm test                     # runs unit tests, SHACL validation and SPARQL invariants
-pnpm run build                # produces static assets into `dist/`
-```
+
+1. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+2. **Configure environment variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   - Create a Firebase project and enable Firestore and Storage.
+   - In *Project settings → General*, register a web app and copy the configuration values into `.env` (`VITE_FIREBASE_*`).
+   - Set `BASE_IRI` to the namespace you want for minted IRIs (see [Base IRI](#base-iri)).
+
+3. **Run the development server**
+
+   ```bash
+   pnpm dev
+   ```
+
+4. **Run tests**
+
+   ```bash
+   pnpm test
+   ```
+
+5. **Build static assets**
+
+   ```bash
+   pnpm run build
+   ```
 
 ## Base IRI
 
