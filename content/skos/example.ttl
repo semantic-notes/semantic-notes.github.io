@@ -1,0 +1,12 @@
+@prefix exs: <https://example.org/skos/> .
+@prefix alts: <http://alt.example.org/skos/> .
+@prefix exo: <https://example.org/ontology/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+exs:ExampleConcept a skos:Concept ;
+    owl:sameAs alts:ExampleConcept ;
+    skos:prefLabel "Example concept"@en ;
+    skos:exactMatch exo:Example .
+
+alts:ExampleConcept owl:sameAs exs:ExampleConcept .

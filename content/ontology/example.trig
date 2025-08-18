@@ -1,0 +1,14 @@
+@prefix exo: <https://example.org/ontology/> .
+@prefix alto: <http://alt.example.org/ontology/> .
+@prefix exs: <https://example.org/skos/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix ex: <https://example.org/vocab/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://example.org/graphs/ontology> {
+  exo:Example a owl:Class ;
+      owl:sameAs alto:Example ;
+      ex:denotesConcept exs:ExampleConcept ;
+      skos:exactMatch exs:ExampleConcept .
+  alto:Example owl:sameAs exo:Example .
+}

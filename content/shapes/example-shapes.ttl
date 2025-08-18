@@ -1,0 +1,18 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix exsh: <https://example.org/shapes/> .
+@prefix altsh: <http://alt.example.org/shapes/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+exsh:ExampleConceptShape a sh:NodeShape ;
+    owl:sameAs altsh:ExampleConceptShape ;
+    sh:targetClass skos:Concept ;
+    sh:property [
+        sh:path skos:prefLabel ;
+        sh:datatype rdf:langString ;
+        sh:minCount 1 ;
+    ] .
+
+altsh:ExampleConceptShape owl:sameAs exsh:ExampleConceptShape .
