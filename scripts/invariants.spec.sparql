@@ -1,0 +1,4 @@
+# Example invariant: always true
+ASK WHERE {
+  # intentionally empty pattern
+}
