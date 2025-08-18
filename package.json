@@ -1,0 +1,13 @@
+{
+  "name": "semantic-notes",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "ts-node tests/rewriteNamespace.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.0"
+  }
+}
