@@ -9,6 +9,15 @@ Semantic Notes uses multiple layers of testing to protect against regressions:
 
 All of the above run via `pnpm test` and are executed in continuous integration. Pull requests are blocked if any checks fail.
 
+## Running checks directly
+
+To run individual layers without the full test suite:
+
+- `node scripts/run-shacl.mjs` — validate the RDF data in `content/` against SHACL shapes in `content/shapes/`.
+- `node scripts/run-invariants.mjs` — execute SPARQL ASK queries from `scripts/invariants.spec.sparql` (or files passed as arguments) and report any that return `false`.
+
+
+
 ## New feature checklist
 
 When introducing new functionality, ensure:
