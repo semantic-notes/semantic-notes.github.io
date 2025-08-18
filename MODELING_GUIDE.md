@@ -146,4 +146,22 @@ ex:Session rdfs:subClassOf [
 
 ## Changing the base IRI
 
-All internal IRIs are minted under a configurable base prefix (e.g. `https://w3id.org/biosyncare/ont#`). If you need to move the ontology to a new domain or namespace, run the `rewriteNamespace.ts` script in `scripts/` to rewrite all IRIs in your dataset. This script takes an input dataset and replaces the old base with the new one. Update the `owl:versionIRI` and provide redirects from old IRIs to new ones (a `w3id.org` prefix is recommended for stability).
+All internal IRIs are minted under a configurable base prefix (e.g.
+`https://w3id.org/biosyncare/ont#`). To migrate the namespace:
+
+1. Decide on the new base IRI. For long‑lived vocabularies, pick a
+   `https://w3id.org/...` prefix that can redirect elsewhere.
+2. Update the `BASE_IRI` environment variable (e.g. in `.env`).
+3. Rewrite the dataset:
+
+   ```bash
+   pnpm tsx scripts/rewriteNamespace.ts [files]
+   ```
+
+   Omit `[files]` to use the default ontology and SKOS graphs. The script
+   rewrites IRIs, updates `owl:versionIRI`, and logs the change to
+   `scripts/migration.log`.
+4. Commit the rewritten files and deploy the new namespace.
+5. Configure HTTP redirects from the old base IRI to the new one so existing
+   links continue to resolve.
+6. Run `pnpm test` to verify the migration.
