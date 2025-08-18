@@ -5,11 +5,12 @@ Thank you for your interest in contributing to Semantic Notes! Contributions are
 ## Workflow
 
 1. **Fork** the repository and create a new branch for your work. Use the prefix `feat/` for new features, `fix/` for bug fixes and `docs/` for documentation.
-2. **Make your changes**. Follow the modeling guidelines in `MODELING_GUIDE.md` and update both OWL and SKOS files where appropriate.
-3. **Add tests**. If you add or change behavior, include corresponding unit tests, SHACL shapes and SPARQL invariants.
-4. **Run tests** locally with `pnpm test`. Ensure all checks pass.
-5. **Update documentation**. If you add a new feature or change existing behavior, update the relevant sections in the documentation.
-6. **Open a pull request**. Use Conventional Commit messages (`feat:`, `fix:`, `docs:` etc.) and fill out the PR template. Explain what you’ve done and why.
+2. **Set up your environment**. Copy `.env.example` to `.env` and fill in the Firebase credentials and `BASE_IRI` namespace needed for development.
+3. **Make your changes**. Follow the modeling guidelines in `MODELING_GUIDE.md` and update both OWL and SKOS files where appropriate.
+4. **Add tests**. If you add or change behavior, include corresponding unit tests, SHACL shapes and SPARQL invariants.
+5. **Run tests** locally with `pnpm test`. Ensure all checks pass.
+6. **Update documentation**. If you add a new feature or change existing behavior, update the relevant sections in the documentation.
+7. **Open a pull request**. Use Conventional Commit messages (`feat:`, `fix:`, `docs:` etc.) and fill out the PR template. Explain what you’ve done and why.
 
 ## Pull request checklist
 
