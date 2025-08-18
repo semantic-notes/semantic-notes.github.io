@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "test": "ts-node tests/rewriteNamespace.test.ts"
+    "dev": "pnpm --dir app dev",
+    "build": "pnpm --dir app build",
+    "test": "ts-node tests/rewriteNamespace.test.ts && pnpm --dir app test"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
