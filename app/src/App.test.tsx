@@ -12,7 +12,8 @@ describe('App', () => {
       </MemoryRouter>
     );
 
-    const noteInput = screen.getByLabelText(/note/i);
+    const noteInput = screen.getByLabelText(/^note$/i);
+    const noteTargetSelect = screen.getByLabelText(/note target/i);
     const structureInput = screen.getByLabelText(/semantic structure/i);
     const subjectInput = screen.getByLabelText(/subject/i);
     const predicateInput = screen.getByLabelText(/predicate/i);
@@ -25,9 +26,10 @@ describe('App', () => {
     await userEvent.type(predicateInput, 'ex:predicate');
     await userEvent.type(objectInput, 'ex:Object');
     await userEvent.selectOptions(objectTypeSelect, 'class');
+    await userEvent.selectOptions(noteTargetSelect, 'predicate');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByText('Example note')).toBeTruthy();
+    expect(screen.getByText('Note on predicate: Example note')).toBeTruthy();
     expect(
       screen.getByText('ex:Subject ex:predicate ex:Object (class)')
     ).toBeTruthy();
