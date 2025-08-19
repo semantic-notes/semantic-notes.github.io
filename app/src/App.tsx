@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 
 function Home() {
   const [note, setNote] = useState('');
+  const [structure, setStructure] = useState('');
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
   const [object, setObject] = useState('');
@@ -12,6 +13,7 @@ function Home() {
     useState<
       Array<{
         note: string;
+        structure: string;
         triple: {
           subject: string;
           predicate: string;
@@ -31,9 +33,10 @@ function Home() {
       return;
     }
     setError('');
-    const newNote = { note, triple: { subject, predicate, object, objectType } };
+    const newNote = { note, structure, triple: { subject, predicate, object, objectType } };
     setNotes((prev) => [...prev, newNote]);
     setNote('');
+    setStructure('');
     setSubject('');
     setPredicate('');
     setObject('');
@@ -49,6 +52,13 @@ function Home() {
         <label>
           Note
           <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+        </label>
+        <label>
+          Semantic Structure
+          <textarea
+            value={structure}
+            onChange={(e) => setStructure(e.target.value)}
+          />
         </label>
         <label>
           Subject
@@ -107,6 +117,7 @@ function Home() {
             {notes.map((n, i) => (
               <li key={i}>
                 <pre>{n.note}</pre>
+                {n.structure && <pre>{n.structure}</pre>}
                 <pre>
                   {n.triple.subject} {n.triple.predicate} {n.triple.object} ({n.triple.objectType})
                 </pre>

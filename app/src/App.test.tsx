@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
 describe('App', () => {
-  it('accepts notes and semantic triples', async () => {
+  it('accepts notes, semantic structures and semantic triples', async () => {
     render(
       <MemoryRouter>
         <App />
@@ -13,12 +13,14 @@ describe('App', () => {
     );
 
     const noteInput = screen.getByLabelText(/note/i);
+    const structureInput = screen.getByLabelText(/semantic structure/i);
     const subjectInput = screen.getByLabelText(/subject/i);
     const predicateInput = screen.getByLabelText(/predicate/i);
     const objectInput = screen.getByLabelText(/^object$/i);
     const objectTypeSelect = screen.getByLabelText(/object type/i);
 
     await userEvent.type(noteInput, 'Example note');
+    fireEvent.change(structureInput, { target: { value: '{"type":"Example"}' } });
     await userEvent.type(subjectInput, 'ex:Subject');
     await userEvent.type(predicateInput, 'ex:predicate');
     await userEvent.type(objectInput, 'ex:Object');
@@ -29,6 +31,7 @@ describe('App', () => {
     expect(
       screen.getByText('ex:Subject ex:predicate ex:Object (class)')
     ).toBeTruthy();
+    expect(screen.getByText('{"type":"Example"}')).toBeTruthy();
 
     const subjectOptions = screen.getByTestId('subject-options');
     expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy();
