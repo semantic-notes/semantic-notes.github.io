@@ -16,6 +16,7 @@ Thank you for your interest in contributing to Semantic Notes! Contributions are
 
 - [ ] Updated OWL and SKOS files (dual IRIs).
 - [ ] Updated SHACL shapes if constraints changed.
+- [ ] Confirmed no existing feature or invariant was removed; updated tests where necessary ([SPECS.md](SPECS.md)).
 - [ ] Added or updated tests (unit, invariants).
 - [ ] Updated documentation (README/SPECS/MODEL/ARCH).
 
