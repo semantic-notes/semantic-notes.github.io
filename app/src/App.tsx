@@ -2,11 +2,11 @@ import { useState, type FormEvent } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
 
+type NoteTarget = 'subject' | 'predicate' | 'object' | 'triple';
+
 function Home() {
   const [note, setNote] = useState('');
-  const [noteTarget, setNoteTarget] = useState<
-    'subject' | 'predicate' | 'object' | 'triple'
-  >('triple');
+  const [noteTarget, setNoteTarget] = useState<NoteTarget>('triple');
   const [structure, setStructure] = useState('');
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
@@ -84,7 +84,7 @@ function Home() {
           Note Target
           <select
             value={noteTarget}
-            onChange={(e) => setNoteTarget(e.target.value)}
+            onChange={(e) => setNoteTarget(e.target.value as NoteTarget)}
           >
             <option value="triple">Triple</option>
             <option value="subject">Subject</option>
