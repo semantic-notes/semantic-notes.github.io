@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('App', () => {
   it('accepts notes, semantic structures and semantic triples', async () => {
@@ -37,5 +41,30 @@ describe('App', () => {
 
     const subjectOptions = screen.getByTestId('subject-options');
     expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy();
+  });
+
+  it('expands known namespace prefixes when saving triples', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+    const objectTypeSelect = screen.getByLabelText(/object type/i);
+
+    await userEvent.type(subjectInput, 'ex:Thing');
+    await userEvent.type(predicateInput, 'rdf:type');
+    await userEvent.type(objectInput, 'skos:Concept');
+    await userEvent.selectOptions(objectTypeSelect, 'class');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(
+      screen.getByText(
+        'ex:Thing http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://www.w3.org/2004/02/skos/core#Concept (class)'
+      )
+    ).toBeTruthy();
   });
 });

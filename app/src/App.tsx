@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { expandCurie } from './namespaces';
 
 function Home() {
   const [note, setNote] = useState('');
@@ -37,11 +38,20 @@ function Home() {
       return;
     }
     setError('');
+    const expandedSubject = expandCurie(subject);
+    const expandedPredicate = expandCurie(predicate);
+    const expandedObject =
+      objectType === 'data' ? object : expandCurie(object);
     const newNote = {
       note,
       noteTarget,
       structure,
-      triple: { subject, predicate, object, objectType },
+      triple: {
+        subject: expandedSubject,
+        predicate: expandedPredicate,
+        object: expandedObject,
+        objectType,
+      },
     };
     setNotes((prev) => [...prev, newNote]);
     setNote('');
@@ -50,9 +60,15 @@ function Home() {
     setSubject('');
     setPredicate('');
     setObject('');
-    setSubjects((prev) => Array.from(new Set([...prev, subject])));
-    setPredicates((prev) => Array.from(new Set([...prev, predicate])));
-    setObjects((prev) => Array.from(new Set([...prev, object])));
+    setSubjects((prev) =>
+      Array.from(new Set([...prev, expandedSubject]))
+    );
+    setPredicates((prev) =>
+      Array.from(new Set([...prev, expandedPredicate]))
+    );
+    setObjects((prev) =>
+      Array.from(new Set([...prev, expandedObject]))
+    );
   };
 
   return (
