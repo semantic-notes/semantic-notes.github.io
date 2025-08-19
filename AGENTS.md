@@ -6,6 +6,7 @@ Follow these rules when working on this repository:
 - **Keep OWL and SKOS in sync**: update parallel ontology representations together.
 - **Run `pnpm test` before submitting pull requests**.
 - **Avoid cross-module edits**: confine changes to a single module at a time.
+- **Review [SPECS.md](SPECS.md) and [TESTING.md](TESTING.md)**: avoid removing existing features or invariants; coordinate with maintainers if a feature must be deprecated.
 
 Quick references:
 - [ARCHITECTURE.md](ARCHITECTURE.md)
