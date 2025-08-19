@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 
 function Home() {
   const [note, setNote] = useState('');
+  const [noteTarget, setNoteTarget] = useState<
+    'subject' | 'predicate' | 'object' | 'triple'
+  >('triple');
   const [structure, setStructure] = useState('');
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
@@ -13,6 +16,7 @@ function Home() {
     useState<
       Array<{
         note: string;
+        noteTarget: 'subject' | 'predicate' | 'object' | 'triple';
         structure: string;
         triple: {
           subject: string;
@@ -33,9 +37,15 @@ function Home() {
       return;
     }
     setError('');
-    const newNote = { note, structure, triple: { subject, predicate, object, objectType } };
+    const newNote = {
+      note,
+      noteTarget,
+      structure,
+      triple: { subject, predicate, object, objectType },
+    };
     setNotes((prev) => [...prev, newNote]);
     setNote('');
+    setNoteTarget('triple');
     setStructure('');
     setSubject('');
     setPredicate('');
@@ -52,6 +62,18 @@ function Home() {
         <label>
           Note
           <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+        </label>
+        <label>
+          Note Target
+          <select
+            value={noteTarget}
+            onChange={(e) => setNoteTarget(e.target.value)}
+          >
+            <option value="triple">Triple</option>
+            <option value="subject">Subject</option>
+            <option value="predicate">Predicate</option>
+            <option value="object">Object</option>
+          </select>
         </label>
         <label>
           Semantic Structure
@@ -116,11 +138,15 @@ function Home() {
           <ul>
             {notes.map((n, i) => (
               <li key={i}>
-                <pre>{n.note}</pre>
-                {n.structure && <pre>{n.structure}</pre>}
                 <pre>
                   {n.triple.subject} {n.triple.predicate} {n.triple.object} ({n.triple.objectType})
                 </pre>
+                {n.note && (
+                  <pre>
+                    Note on {n.noteTarget}: {n.note}
+                  </pre>
+                )}
+                {n.structure && <pre>{n.structure}</pre>}
               </li>
             ))}
           </ul>
