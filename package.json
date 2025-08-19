@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm --dir app dev",
     "build": "pnpm --dir app build",
-    "test": "vitest run && node scripts/run-shacl.mjs && node scripts/run-invariants.mjs && pnpm --dir app test"
+    "test": "vitest run && node scripts/run-shacl.mjs && node scripts/run-invariants.mjs && pnpm --dir=app vitest run"
   },
   "devDependencies": {
     "@comunica/query-sparql": "^4.3.0",
