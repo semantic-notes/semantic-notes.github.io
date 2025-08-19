@@ -3,14 +3,27 @@ import { Routes, Route } from 'react-router-dom';
 
 function Home() {
   const [note, setNote] = useState('');
-  const [structure, setStructure] = useState('');
-  const [saved, setSaved] = useState<{ note: string; structure: string } | null>(null);
+  const [subject, setSubject] = useState('');
+  const [predicate, setPredicate] = useState('');
+  const [object, setObject] = useState('');
+  const [error, setError] = useState('');
+  const [saved, setSaved] =
+    useState<{ note: string; triple: { subject: string; predicate: string; object: string } } | null>(
+      null,
+    );
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setSaved({ note, structure });
+    if (!subject || !predicate || !object) {
+      setError('Subject, predicate and object are required.');
+      return;
+    }
+    setError('');
+    setSaved({ note, triple: { subject, predicate, object } });
     setNote('');
-    setStructure('');
+    setSubject('');
+    setPredicate('');
+    setObject('');
   };
 
   return (
@@ -19,25 +32,30 @@ function Home() {
       <form onSubmit={handleSubmit}>
         <label>
           Note
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} />
         </label>
         <label>
-          Semantic Structure
-          <textarea
-            value={structure}
-            onChange={(e) => setStructure(e.target.value)}
-          />
+          Subject
+          <input value={subject} onChange={(e) => setSubject(e.target.value)} />
+        </label>
+        <label>
+          Predicate
+          <input value={predicate} onChange={(e) => setPredicate(e.target.value)} />
+        </label>
+        <label>
+          Object
+          <input value={object} onChange={(e) => setObject(e.target.value)} />
         </label>
         <button type="submit">Save</button>
       </form>
+      {error && <p role="alert">{error}</p>}
       {saved && (
         <div>
           <h2>Saved</h2>
           <pre>{saved.note}</pre>
-          <pre>{saved.structure}</pre>
+          <pre>
+            {saved.triple.subject} {saved.triple.predicate} {saved.triple.object}
+          </pre>
         </div>
       )}
     </div>
