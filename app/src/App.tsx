@@ -72,9 +72,10 @@ function Home() {
   };
 
   return (
-    <div>
-      <h1>Home</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="app-container">
+      <section className="form-section">
+        <h1>Semantic Notes</h1>
+        <form onSubmit={handleSubmit}>
         <label>
           Note
           <textarea value={note} onChange={(e) => setNote(e.target.value)} />
@@ -145,29 +146,62 @@ function Home() {
             <option value="other">Other</option>
           </select>
         </label>
-        <button type="submit">Save</button>
-      </form>
-      {error && <p role="alert">{error}</p>}
-      {notes.length > 0 && (
-        <div>
-          <h2>Saved</h2>
-          <ul>
-            {notes.map((n, i) => (
-              <li key={i}>
-                <pre>
-                  {n.triple.subject} {n.triple.predicate} {n.triple.object} ({n.triple.objectType})
-                </pre>
-                {n.note && (
+          <button type="submit">Save</button>
+        </form>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+      </section>
+      <section className="data-section">
+        {subjects.length > 0 && (
+          <div>
+            <h2>Registered Subjects</h2>
+            <ul className="registered-list">
+              {subjects.map((s) => (
+                <li key={s}>
+                  <button type="button" onClick={() => setSubject(s)}>
+                    {s}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {predicates.length > 0 && (
+          <div>
+            <h2>Registered Predicates</h2>
+            <ul className="registered-list">
+              {predicates.map((p) => (
+                <li key={p}>
+                  <button type="button" onClick={() => setPredicate(p)}>
+                    {p}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {notes.length > 0 && (
+          <div>
+            <h2>Registered Triples</h2>
+            <ul className="note-list">
+              {notes.map((n, i) => (
+                <li key={i} className="note-card">
                   <pre>
-                    Note on {n.noteTarget}: {n.note}
+                    {n.triple.subject} {n.triple.predicate} {n.triple.object} ({n.triple.objectType})
                   </pre>
-                )}
-                {n.structure && <pre>{n.structure}</pre>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+                  {n.note && (
+                    <pre>Note on {n.noteTarget}: {n.note}</pre>
+                  )}
+                  {n.structure && <pre>{n.structure}</pre>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
