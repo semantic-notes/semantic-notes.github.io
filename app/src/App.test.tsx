@@ -67,4 +67,15 @@ describe('App', () => {
       )
     ).toBeTruthy();
   });
+
+  it('provides guidance through tooltips', () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByLabelText(/note target/i).getAttribute('title')).toBeTruthy();
+    expect(screen.getByLabelText(/subject/i).getAttribute('title')).toBeTruthy();
+  });
 });
