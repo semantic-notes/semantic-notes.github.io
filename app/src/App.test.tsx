@@ -34,9 +34,16 @@ describe('App', () => {
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(screen.getByText('Note on predicate: Example note')).toBeTruthy();
-    expect(
-      screen.getByText('ex:Subject ex:predicate ex:Object (class)')
-    ).toBeTruthy();
+    expect(screen.getByTitle('Add note about this subject').textContent).toBe(
+      'ex:Subject'
+    );
+    expect(screen.getByTitle('Add note about this predicate').textContent).toBe(
+      'ex:predicate'
+    );
+    expect(screen.getByTitle('Add note about this object').textContent).toBe(
+      'ex:Object'
+    );
+    expect(screen.getByText('(class)')).toBeTruthy();
     expect(screen.getByText('{"type":"Example"}')).toBeTruthy();
 
     const subjectOptions = screen.getByTestId('subject-options');
@@ -61,11 +68,15 @@ describe('App', () => {
     await userEvent.selectOptions(objectTypeSelect, 'class');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
+    expect(screen.getByTitle('Add note about this subject').textContent).toBe(
+      'ex:Thing'
+    );
     expect(
-      screen.getByText(
-        'ex:Thing http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://www.w3.org/2004/02/skos/core#Concept (class)'
-      )
-    ).toBeTruthy();
+      screen.getByTitle('Add note about this predicate').textContent
+    ).toBe('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+    expect(screen.getByTitle('Add note about this object').textContent).toBe(
+      'http://www.w3.org/2004/02/skos/core#Concept'
+    );
   });
 
   it('provides guidance through tooltips', () => {
@@ -77,5 +88,38 @@ describe('App', () => {
 
     expect(screen.getByLabelText(/note target/i).getAttribute('title')).toBeTruthy();
     expect(screen.getByLabelText(/subject/i).getAttribute('title')).toBeTruthy();
+  });
+
+  it('prefills form fields when triple parts are clicked', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:S1');
+    await userEvent.type(predicateInput, 'ex:p1');
+    await userEvent.type(objectInput, 'ex:O1');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const subjectBtn = screen.getByTitle('Add note about this subject');
+    await userEvent.click(subjectBtn);
+
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
+      'ex:S1'
+    );
+    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe(
+      'ex:p1'
+    );
+    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe(
+      'ex:O1'
+    );
+    expect(
+      (screen.getByLabelText(/note target/i) as HTMLSelectElement).value
+    ).toBe('subject');
   });
 });
