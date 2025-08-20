@@ -2,6 +2,14 @@
 
 Semantic, AI‑assisted note‑taking for ontologies and vocabularies.
 
+- Preserves dual IRIs for canonical and alternate identifiers
+- Stores notes as W3C Web Annotations
+- Provides RDFS/SHACL checks for consistency
+- Offers optional OWL RL inference
+- Synchronizes notes offline via Firebase
+
+These capabilities must remain supported when extending the codebase.
+
 This project is a proof‑of‑concept for a client‑side web application that lets you
 create and manage ontologies and vocabularies using OWL and SKOS. Notes are
 stored as Web Annotations and attached directly to classes, properties and
