@@ -3,21 +3,34 @@ import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
-import TripleVisualization, { type Triple } from './TripleVisualization';
+import TripleVisualization from './TripleVisualization';
+import { DataFactory, Parser, Writer } from 'n3';
+import type { Quad } from '@rdfjs/types';
 
 function Home() {
+  const { namedNode, literal, quad: createQuad } = DataFactory;
+  const parser = new Parser({ format: 'N-Quads' });
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
   const [object, setObject] = useState('');
-  const [objectType, setObjectType] = useState<'data' | 'class' | 'other'>('data');
   const [error, setError] = useState('');
-  const [triples, setTriples] = useState<Triple[]>([]);
+  const [triples, setTriples] = useState<Quad[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [predicates, setPredicates] = useState<string[]>([]);
   const [objects, setObjects] = useState<string[]>([]);
   const isTestEnv = import.meta.env.MODE === 'test';
 
-  const handleSubmit = (e: FormEvent) => {
+  const serializeQuad = (q: Quad): Promise<string> => {
+    const writer = new Writer({ format: 'N-Quads' });
+    writer.addQuad(q);
+    return new Promise((resolve, reject) =>
+      writer.end((err, res) => (err ? reject(err) : resolve(res)))
+    );
+  };
+
+  const parseQuad = (nq: string): Quad => parser.parse(nq)[0] as Quad;
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!subject || !predicate || !object) {
       setError('Subject, predicate and object are required.');
@@ -26,34 +39,39 @@ function Home() {
     setError('');
     const expandedSubject = expandCurie(subject);
     const expandedPredicate = expandCurie(predicate);
-    const expandedObject =
-      objectType === 'data' ? object : expandCurie(object);
-    const newTriple: Triple = {
-      subject: expandedSubject,
-      predicate: expandedPredicate,
-      object: expandedObject,
-      objectType,
-    };
+    const expandedObject = expandCurie(object);
+    const objectTerm =
+      expandedObject !== object || /^https?:/.test(expandedObject) || object.includes(':')
+        ? namedNode(expandedObject)
+        : literal(object);
+    const newTriple = createQuad(
+      namedNode(expandedSubject),
+      namedNode(expandedPredicate),
+      objectTerm
+    );
     setTriples((prev) => [...prev, newTriple]);
     if (!isTestEnv) {
-      void addDoc(collection(db, 'triples'), newTriple).catch(console.error);
+      try {
+        const nquad = await serializeQuad(newTriple);
+        await addDoc(collection(db, 'triples'), { nquad });
+      } catch (err) {
+        console.error(err);
+      }
     }
     setSubject('');
     setPredicate('');
     setObject('');
-    setObjectType('data');
     setSubjects((prev) => Array.from(new Set([...prev, expandedSubject])));
     setPredicates((prev) =>
       Array.from(new Set([...prev, expandedPredicate]))
     );
-    setObjects((prev) => Array.from(new Set([...prev, expandedObject])));
+    setObjects((prev) => Array.from(new Set([...prev, objectTerm.value])));
   };
 
-  const prefillFromTriple = (triple: Triple) => {
-    setSubject(triple.subject);
-    setPredicate(triple.predicate);
-    setObject(triple.object);
-    setObjectType(triple.objectType);
+  const prefillFromTriple = (triple: Quad) => {
+    setSubject(triple.subject.value);
+    setPredicate(triple.predicate.value);
+    setObject(triple.object.value);
   };
 
   useEffect(() => {
@@ -61,11 +79,15 @@ function Home() {
     const loadTriples = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'triples'));
-        const loaded = snapshot.docs.map((d) => d.data() as Triple);
+        const loaded = snapshot.docs.map((d) =>
+          parseQuad((d.data() as { nquad: string }).nquad)
+        );
         setTriples(loaded);
-        setSubjects(Array.from(new Set(loaded.map((n) => n.subject))));
-        setPredicates(Array.from(new Set(loaded.map((n) => n.predicate))));
-        setObjects(Array.from(new Set(loaded.map((n) => n.object))));
+        setSubjects(Array.from(new Set(loaded.map((n) => n.subject.value))));
+        setPredicates(
+          Array.from(new Set(loaded.map((n) => n.predicate.value)))
+        );
+        setObjects(Array.from(new Set(loaded.map((n) => n.object.value))));
       } catch (err) {
         console.error(err);
       }
@@ -123,20 +145,6 @@ function Home() {
               ))}
             </datalist>
           </label>
-          <label>
-            Object Type
-            <select
-              value={objectType}
-              title="Choose the kind of object (literal data, class, or other)"
-              onChange={(e) =>
-                setObjectType(e.target.value as 'data' | 'class' | 'other')
-              }
-            >
-              <option value="data">Data</option>
-              <option value="class">Class</option>
-              <option value="other">Other</option>
-            </select>
-          </label>
           <button type="submit">Save</button>
         </form>
         {error && (
@@ -187,7 +195,7 @@ function Home() {
                       title="Use subject"
                       onClick={() => prefillFromTriple(t)}
                     >
-                      {t.subject}
+                      {t.subject.value}
                     </button>
                     <button
                       type="button"
@@ -195,7 +203,7 @@ function Home() {
                       title="Use predicate"
                       onClick={() => prefillFromTriple(t)}
                     >
-                      {t.predicate}
+                      {t.predicate.value}
                     </button>
                     <button
                       type="button"
@@ -203,9 +211,9 @@ function Home() {
                       title="Use object"
                       onClick={() => prefillFromTriple(t)}
                     >
-                      {t.object}
+                      {t.object.value}
                     </button>
-                    <span>({t.objectType})</span>
+                    <span>({t.object.termType})</span>
                   </div>
                 </li>
               ))}

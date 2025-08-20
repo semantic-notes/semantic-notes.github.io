@@ -1,13 +1,8 @@
-export type Triple = {
-  subject: string;
-  predicate: string;
-  object: string;
-  objectType: 'data' | 'class' | 'other';
-};
+import type { Quad } from '@rdfjs/types';
 
 interface TripleVisualizationProps {
-  triples: Triple[];
-  onTripleClick?: (triple: Triple) => void;
+  triples: Quad[];
+  onTripleClick?: (triple: Quad) => void;
 }
 
 export default function TripleVisualization({
@@ -15,7 +10,7 @@ export default function TripleVisualization({
   onTripleClick,
 }: TripleVisualizationProps) {
   const nodeIds = Array.from(
-    new Set(triples.flatMap((t) => [t.subject, t.object]))
+    new Set(triples.flatMap((t) => [t.subject.value, t.object.value]))
   );
   const nodes = nodeIds.map((id, idx) => ({
     id,
@@ -24,9 +19,9 @@ export default function TripleVisualization({
   }));
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   const edges = triples.map((t) => ({
-    source: nodeMap.get(t.subject)!,
-    target: nodeMap.get(t.object)!,
-    label: t.predicate,
+    source: nodeMap.get(t.subject.value)!,
+    target: nodeMap.get(t.object.value)!,
+    label: t.predicate.value,
     triple: t,
   }));
   const width = Math.min(5, nodeIds.length) * 150 + 100;
