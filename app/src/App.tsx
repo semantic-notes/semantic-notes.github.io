@@ -78,12 +78,18 @@ function Home() {
         <form onSubmit={handleSubmit}>
         <label>
           Note
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+          <textarea
+            value={note}
+            placeholder="Optional note about this entry"
+            title="Optional note about the triple or one of its parts"
+            onChange={(e) => setNote(e.target.value)}
+          />
         </label>
         <label>
           Note Target
           <select
             value={noteTarget}
+            title="Select which part of the triple the note refers to"
             onChange={(e) => setNoteTarget(e.target.value as NoteTarget)}
           >
             <option value="triple">Triple</option>
@@ -96,6 +102,8 @@ function Home() {
           Semantic Structure
           <textarea
             value={structure}
+            placeholder='{"type":"Example"}'
+            title="Optional structured representation such as JSON-LD"
             onChange={(e) => setStructure(e.target.value)}
           />
         </label>
@@ -104,6 +112,8 @@ function Home() {
           <input
             list="subject-options"
             value={subject}
+            placeholder="ex:Subject"
+            title="Enter the subject IRI or CURIE"
             onChange={(e) => setSubject(e.target.value)}
           />
           <datalist id="subject-options" data-testid="subject-options">
@@ -117,6 +127,8 @@ function Home() {
           <input
             list="predicate-options"
             value={predicate}
+            placeholder="ex:predicate"
+            title="Enter the predicate IRI or CURIE"
             onChange={(e) => setPredicate(e.target.value)}
           />
           <datalist id="predicate-options" data-testid="predicate-options">
@@ -130,6 +142,8 @@ function Home() {
           <input
             list="object-options"
             value={object}
+            placeholder="ex:Object"
+            title="Enter the object value"
             onChange={(e) => setObject(e.target.value)}
           />
           <datalist id="object-options" data-testid="object-options">
@@ -140,7 +154,11 @@ function Home() {
         </label>
         <label>
           Object Type
-          <select value={objectType} onChange={(e) => setObjectType(e.target.value)}>
+          <select
+            value={objectType}
+            title="Choose the kind of object (literal data, class, or other)"
+            onChange={(e) => setObjectType(e.target.value)}
+          >
             <option value="data">Data</option>
             <option value="class">Class</option>
             <option value="other">Other</option>
