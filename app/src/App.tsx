@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
+import TripleVisualization from './TripleVisualization';
 
 type NoteTarget = 'subject' | 'predicate' | 'object' | 'triple';
 type StoredNote = {
@@ -292,6 +293,9 @@ function Home() {
               ))}
             </ul>
           </div>
+        )}
+        {notes.length > 0 && (
+          <TripleVisualization triples={notes.map((n) => n.triple)} />
         )}
       </section>
     </div>
