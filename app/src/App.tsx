@@ -1,8 +1,21 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 type NoteTarget = 'subject' | 'predicate' | 'object' | 'triple';
+type StoredNote = {
+  note: string;
+  noteTarget: NoteTarget;
+  structure: string;
+  triple: {
+    subject: string;
+    predicate: string;
+    object: string;
+    objectType: 'data' | 'class' | 'other';
+  };
+};
 
 function Home() {
   const [note, setNote] = useState('');
@@ -11,22 +24,10 @@ function Home() {
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
   const [object, setObject] = useState('');
-  const [objectType, setObjectType] = useState('data');
+  const [objectType, setObjectType] =
+    useState<'data' | 'class' | 'other'>('data');
   const [error, setError] = useState('');
-  const [notes, setNotes] =
-    useState<
-      Array<{
-        note: string;
-        noteTarget: 'subject' | 'predicate' | 'object' | 'triple';
-        structure: string;
-        triple: {
-          subject: string;
-          predicate: string;
-          object: string;
-          objectType: string;
-        };
-      }>
-    >([]);
+  const [notes, setNotes] = useState<StoredNote[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [predicates, setPredicates] = useState<string[]>([]);
   const [objects, setObjects] = useState<string[]>([]);
@@ -42,7 +43,7 @@ function Home() {
     const expandedPredicate = expandCurie(predicate);
     const expandedObject =
       objectType === 'data' ? object : expandCurie(object);
-    const newNote = {
+    const newNote: StoredNote = {
       note,
       noteTarget,
       structure,
@@ -54,6 +55,7 @@ function Home() {
       },
     };
     setNotes((prev) => [...prev, newNote]);
+    void addDoc(collection(db, 'notes'), newNote).catch(console.error);
     setNote('');
     setNoteTarget('triple');
     setStructure('');
@@ -86,6 +88,28 @@ function Home() {
     setObjectType(triple.objectType);
     setNoteTarget(target);
   };
+
+  useEffect(() => {
+    const loadNotes = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'notes'));
+        const loaded = snapshot.docs.map((d) => d.data() as StoredNote);
+        setNotes(loaded);
+        setSubjects(
+          Array.from(new Set(loaded.map((n) => n.triple.subject)))
+        );
+        setPredicates(
+          Array.from(new Set(loaded.map((n) => n.triple.predicate)))
+        );
+        setObjects(
+          Array.from(new Set(loaded.map((n) => n.triple.object)))
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    void loadNotes();
+  }, []);
 
   return (
     <div className="app-container">
@@ -173,7 +197,9 @@ function Home() {
           <select
             value={objectType}
             title="Choose the kind of object (literal data, class, or other)"
-            onChange={(e) => setObjectType(e.target.value)}
+            onChange={(e) =>
+              setObjectType(e.target.value as 'data' | 'class' | 'other')
+            }
           >
             <option value="data">Data</option>
             <option value="class">Class</option>
