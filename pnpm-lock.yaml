@@ -47,6 +47,12 @@ importers:
       n3:
         specifier: ^1.26.0
         version: 1.26.0
+      rdf-ext:
+        specifier: ^2.5.2
+        version: 2.5.2(web-streams-polyfill@3.3.3)
+      rdf-validate-shacl:
+        specifier: ^0.6.5
+        version: 0.6.5
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -104,7 +110,7 @@ importers:
         version: 7.1.2(@types/node@24.3.0)
       vitest:
         specifier: ^1.6.0
-        version: 1.6.1(@types/node@24.3.0)(@vitest/ui@3.2.4(vitest@3.2.4))(jsdom@26.1.0)
+        version: 1.6.1(@types/node@24.3.0)(@vitest/ui@3.2.4)(jsdom@26.1.0)
 
 packages:
 
@@ -10000,7 +10006,7 @@ snapshots:
       '@types/node': 24.3.0
       fsevents: 2.3.3
 
-  vitest@1.6.1(@types/node@24.3.0)(@vitest/ui@3.2.4(vitest@3.2.4))(jsdom@26.1.0):
+  vitest@1.6.1(@types/node@24.3.0)(@vitest/ui@3.2.4)(jsdom@26.1.0):
     dependencies:
       '@vitest/expect': 1.6.1
       '@vitest/runner': 1.6.1

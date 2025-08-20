@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { DataFactory, Writer } from 'n3';
 import type { Quad } from '@rdfjs/types';
+import rdf from 'rdf-ext';
+import shaclValidator from './shacl';
 import { db } from './firebase';
 import { expandCurie } from './namespaces';
 import { buildDualIri } from '../../scripts/baseIri';
@@ -64,6 +66,17 @@ export default function EntityForm() {
           literal(label, 'en')
         )
       );
+    }
+
+    const data = rdf.dataset();
+    data.addAll(triples);
+    const report = await shaclValidator.validate(data);
+    if (!report.conforms) {
+      const messages = report.results
+        .flatMap((r) => (Array.isArray(r.message) ? r.message : [r.message]))
+        .map((m) => (typeof m === 'string' ? m : m.value));
+      setError(messages.join(' '));
+      return;
     }
 
     if (!isTestEnv) {

@@ -1,6 +1,8 @@
 import { useState, type FormEvent, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
+import rdf from 'rdf-ext';
+import shaclValidator from './shacl';
 import {
   collection,
   addDoc,
@@ -64,6 +66,20 @@ function Home() {
       namedNode(expandedPredicate),
       objectTerm
     );
+    const data = rdf.dataset();
+    for (const t of triples) {
+      if (editingId === t.id) continue;
+      data.add(t.quad);
+    }
+    data.add(newQuad);
+    const report = await shaclValidator.validate(data);
+    if (!report.conforms) {
+      const messages = report.results
+        .flatMap((r) => (Array.isArray(r.message) ? r.message : [r.message]))
+        .map((m) => (typeof m === 'string' ? m : m.value));
+      setError(messages.join(' '));
+      return;
+    }
     if (editingId) {
       setTriples((prev) =>
         prev.map((t) => (t.id === editingId ? { id: editingId, quad: newQuad } : t))

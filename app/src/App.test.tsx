@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup, within } from '@testing-library/react';
+import { render, screen, cleanup, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
@@ -31,7 +31,9 @@ describe('App', () => {
     expect(screen.getByText('(NamedNode)')).toBeTruthy();
 
     const subjectOptions = screen.getByTestId('subject-options');
-    expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy();
+    await waitFor(() =>
+      expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy()
+    );
 
     const viz = screen.getByTestId('triple-visualization');
     expect(viz.textContent).toContain('ex:Subject');
@@ -51,7 +53,7 @@ describe('App', () => {
 
     await userEvent.type(subjectInput, 'ex:Thing');
     await userEvent.type(predicateInput, 'rdf:type');
-    await userEvent.type(objectInput, 'skos:Concept');
+    await userEvent.type(objectInput, 'owl:Class');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
     const predicateButtons = screen.getAllByTitle('Use predicate');
@@ -60,8 +62,28 @@ describe('App', () => {
     );
     const objectButtons = screen.getAllByTitle('Use object');
     expect(objectButtons[objectButtons.length - 1].textContent).toBe(
-      'http://www.w3.org/2004/02/skos/core#Concept'
+      'http://www.w3.org/2002/07/owl#Class'
     );
+  });
+
+  it('shows validation errors for triples violating shapes', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:Thing');
+    await userEvent.type(predicateInput, 'rdf:type');
+    await userEvent.type(objectInput, 'skos:Concept');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.getByRole('alert').textContent).toMatch(/Less than 1/);
+    expect(screen.queryByTitle('Use subject')).toBeNull();
   });
 
   it('provides guidance through tooltips', () => {
