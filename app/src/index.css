@@ -90,6 +90,10 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.triple-edge {
+  cursor: pointer;
+}
+
 .error {
   color: #c00;
   margin-top: 1rem;

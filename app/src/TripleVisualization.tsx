@@ -2,13 +2,18 @@ export type Triple = {
   subject: string;
   predicate: string;
   object: string;
+  objectType: 'data' | 'class' | 'other';
 };
 
 interface TripleVisualizationProps {
   triples: Triple[];
+  onTripleClick?: (triple: Triple) => void;
 }
 
-export default function TripleVisualization({ triples }: TripleVisualizationProps) {
+export default function TripleVisualization({
+  triples,
+  onTripleClick,
+}: TripleVisualizationProps) {
   const nodeIds = Array.from(
     new Set(triples.flatMap((t) => [t.subject, t.object]))
   );
@@ -22,6 +27,7 @@ export default function TripleVisualization({ triples }: TripleVisualizationProp
     source: nodeMap.get(t.subject)!,
     target: nodeMap.get(t.object)!,
     label: t.predicate,
+    triple: t,
   }));
   const width = Math.min(5, nodeIds.length) * 150 + 100;
   const height = Math.ceil(nodeIds.length / 5) * 100 + 100;
@@ -31,7 +37,12 @@ export default function TripleVisualization({ triples }: TripleVisualizationProp
       <h2>Triple Visualization</h2>
       <svg width={width} height={height} data-testid="triple-visualization">
         {edges.map((e, i) => (
-          <g key={i}>
+          <g
+            key={i}
+            className="triple-edge"
+            data-testid={`triple-edge-${i}`}
+            onClick={() => onTripleClick?.(e.triple)}
+          >
             <line
               x1={e.source.x}
               y1={e.source.y}
