@@ -79,7 +79,7 @@ function Home() {
       subject: string;
       predicate: string;
       object: string;
-      objectType: string;
+      objectType: 'data' | 'class' | 'other';
     },
     target: NoteTarget
   ) => {
