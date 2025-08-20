@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
@@ -9,42 +9,28 @@ afterEach(() => {
 });
 
 describe('App', () => {
-  it('accepts notes, semantic structures and semantic triples', async () => {
+  it('saves triples and displays them', async () => {
     render(
       <MemoryRouter>
         <App />
       </MemoryRouter>
     );
 
-    const noteInput = screen.getByLabelText(/^note$/i);
-    const noteTargetSelect = screen.getByLabelText(/note target/i);
-    const structureInput = screen.getByLabelText(/semantic structure/i);
     const subjectInput = screen.getByLabelText(/subject/i);
     const predicateInput = screen.getByLabelText(/predicate/i);
     const objectInput = screen.getByLabelText(/^object$/i);
     const objectTypeSelect = screen.getByLabelText(/object type/i);
 
-    await userEvent.type(noteInput, 'Example note');
-    fireEvent.change(structureInput, { target: { value: '{"type":"Example"}' } });
     await userEvent.type(subjectInput, 'ex:Subject');
     await userEvent.type(predicateInput, 'ex:predicate');
     await userEvent.type(objectInput, 'ex:Object');
     await userEvent.selectOptions(objectTypeSelect, 'class');
-    await userEvent.selectOptions(noteTargetSelect, 'predicate');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByText('Note on predicate: Example note')).toBeTruthy();
-    expect(screen.getByTitle('Add note about this subject').textContent).toBe(
-      'ex:Subject'
-    );
-    expect(screen.getByTitle('Add note about this predicate').textContent).toBe(
-      'ex:predicate'
-    );
-    expect(screen.getByTitle('Add note about this object').textContent).toBe(
-      'ex:Object'
-    );
+    expect(screen.getByTitle('Use subject').textContent).toBe('ex:Subject');
+    expect(screen.getByTitle('Use predicate').textContent).toBe('ex:predicate');
+    expect(screen.getByTitle('Use object').textContent).toBe('ex:Object');
     expect(screen.getByText('(class)')).toBeTruthy();
-    expect(screen.getByText('{"type":"Example"}')).toBeTruthy();
 
     const subjectOptions = screen.getByTestId('subject-options');
     expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy();
@@ -72,17 +58,11 @@ describe('App', () => {
     await userEvent.selectOptions(objectTypeSelect, 'class');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    const subjectButtons = screen.getAllByTitle('Add note about this subject');
-    expect(subjectButtons[subjectButtons.length - 1].textContent).toBe(
-      'ex:Thing'
-    );
-    const predicateButtons = screen.getAllByTitle(
-      'Add note about this predicate'
-    );
+    const predicateButtons = screen.getAllByTitle('Use predicate');
     expect(predicateButtons[predicateButtons.length - 1].textContent).toBe(
       'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
     );
-    const objectButtons = screen.getAllByTitle('Add note about this object');
+    const objectButtons = screen.getAllByTitle('Use object');
     expect(objectButtons[objectButtons.length - 1].textContent).toBe(
       'http://www.w3.org/2004/02/skos/core#Concept'
     );
@@ -95,8 +75,9 @@ describe('App', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText(/note target/i).getAttribute('title')).toBeTruthy();
     expect(screen.getByLabelText(/subject/i).getAttribute('title')).toBeTruthy();
+    expect(screen.getByLabelText(/predicate/i).getAttribute('title')).toBeTruthy();
+    expect(screen.getByLabelText(/^object$/i).getAttribute('title')).toBeTruthy();
   });
 
   it('prefills form fields when triple parts are clicked', async () => {
@@ -115,21 +96,12 @@ describe('App', () => {
     await userEvent.type(objectInput, 'ex:O1');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    const subjectBtns = screen.getAllByTitle('Add note about this subject');
+    const subjectBtns = screen.getAllByTitle('Use subject');
     await userEvent.click(subjectBtns[subjectBtns.length - 1]);
 
-    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
-      'ex:S1'
-    );
-    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe(
-      'ex:p1'
-    );
-    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe(
-      'ex:O1'
-    );
-    expect(
-      (screen.getByLabelText(/note target/i) as HTMLSelectElement).value
-    ).toBe('subject');
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe('ex:S1');
+    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe('ex:p1');
+    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe('ex:O1');
   });
 
   it('prefills form fields when visualization edge is clicked', async () => {
@@ -151,17 +123,8 @@ describe('App', () => {
     const edge = screen.getByTestId('triple-edge-0');
     await userEvent.click(edge);
 
-    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
-      'ex:Vs'
-    );
-    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe(
-      'ex:Vp'
-    );
-    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe(
-      'ex:Vo'
-    );
-    expect(
-      (screen.getByLabelText(/note target/i) as HTMLSelectElement).value
-    ).toBe('triple');
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe('ex:Vs');
+    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe('ex:Vp');
+    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe('ex:Vo');
   });
 });

@@ -54,25 +54,13 @@ Record provenance using PROV-O:
 
 ## Annotations
 
-Markdown notes can carry Web Annotations with Turtle describing their semantics:
-
-```markdown
-Breathing slowly eases anxiety.
-```
+Record notes and other metadata directly with annotation properties. For example:
 
 ```ttl
-[] a oa:Annotation ;
-   oa:hasTarget ex:BreathingTechnique,
-               ex:BreathingTechniqueConcept ;
-   oa:hasBody [
-     a cnt:ContentAsText ;
-     cnt:chars "Breathing slowly eases anxiety."@en ;
-   ] .
+ex:BreathingTechnique rdfs:comment "Breathing slowly eases anxiety."@en .
 ```
 
-The annotation links the note to the OWL class `ex:BreathingTechnique` and its SKOS concept `ex:BreathingTechniqueConcept`.
-
-Store each annotation as a Markdown file (e.g., under `content/notes/`) with the text and Turtle blocks together. During `pnpm test`, the Turtle is extracted and validated through SHACL shapes and SPARQL invariants to ensure annotations remain consistent and dual IRIs stay synchronized.
+These annotations live in the ontology graphs and are validated during `pnpm test` alongside the rest of the data, keeping dual IRIs synchronized.
 
 ## Domains and ranges
 

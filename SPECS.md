@@ -4,7 +4,7 @@
 
 - Create/edit OWL classes, properties and individuals; build restrictions (some, only, min/max/qualified cardinality).
 - Mirror SKOS concepts for each OWL class (dual IRIs) and link them via `ex:denotesConcept` and `skos:exactMatch`.
-- Attach notes as Web Annotations (`oa:Annotation`) targeting any IRI; notes can be plain text or RDF.
+- Add annotations through RDF triples using dedicated annotation properties.
 - Import/export TriG datasets as whole or per-graph; exports include a manifest recording each named graph’s IRI, type, and checksum. `scripts/import-dataset.ts` validates and merges data while enforcing SHACL and SPARQL invariants.
 - AI assistance (local-first) provides label suggestions, natural language to SPARQL drafts and mapping hints.
 
@@ -26,5 +26,4 @@
 - **SKOS**: `content/skos/*.trig` contains corresponding SKOS concepts and taxonomy.
 - **Shapes**: `content/shapes/*.ttl` contains SHACL node and property shapes for validation.
 - **Rules**: `content/rules/*.n3` contains custom inference rules (EYE or Notation3).
-- **Notes**: `content/notes/*.md` contains Markdown with embedded Turtle blocks that are extracted into RDF.
 - **Contexts**: `content/contexts/*.jsonld` contains generated JSON-LD contexts.

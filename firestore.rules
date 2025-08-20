@@ -1,10 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/notes/{noteId} {
+    match /users/{uid}/triples/{tripleId} {
       allow read, create, update, delete: if request.auth != null && request.auth.uid == uid;
     }
-    match /notes/{noteId} {
+    match /triples/{tripleId} {
       allow read, write: if true;
     }
     match /{document=**} {

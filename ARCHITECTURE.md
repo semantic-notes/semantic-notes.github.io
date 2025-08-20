@@ -12,7 +12,6 @@ Semantic Notes is organized into three main layers:
    - `skos/`: SKOS concepts that mirror the classes.
    - `shapes/`: SHACL shapes used to validate the data.
    - `rules/`: rule packs for inference and suggestions.
-   - `notes/`: Markdown notes with embedded triples.
 
 3. **Tooling** — Located in the `scripts/` and `tests/` folders. These contain scripts for dataset export/import, context generation and automated tests. Continuous integration is configured via GitHub Actions in `.github/workflows/`.
 

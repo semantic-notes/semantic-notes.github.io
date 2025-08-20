@@ -39,7 +39,7 @@ body {
 }
 
 .registered-list,
-.note-list {
+.triple-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -57,7 +57,7 @@ body {
   font-family: inherit;
 }
 
-.note-card {
+.triple-card {
   background: var(--card-bg);
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -84,10 +84,6 @@ body {
 
 .triple-part-button:hover {
   text-decoration: none;
-}
-
-.triple-note-button {
-  margin-bottom: 0.5rem;
 }
 
 .triple-edge {

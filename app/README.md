@@ -68,6 +68,3 @@ export default tseslint.config([
 ])
 ```
 
-## Semantic structure input
-
-The web interface includes a **Semantic Structure** textarea where users can paste JSON-LD or other structured data. This structure is stored with each note and displayed alongside the saved semantic triple. Future contributors should keep this input and its corresponding tests intact when modifying the UI.
