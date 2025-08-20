@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import TripleVisualization from './TripleVisualization';
+import EntityForm from './EntityForm';
 import { DataFactory, Parser, Writer } from 'n3';
 import type { Quad } from '@rdfjs/types';
 
@@ -286,6 +287,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/entity" element={<EntityForm />} />
     </Routes>
   );
 }
