@@ -131,4 +131,37 @@ describe('App', () => {
       (screen.getByLabelText(/note target/i) as HTMLSelectElement).value
     ).toBe('subject');
   });
+
+  it('prefills form fields when visualization edge is clicked', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:Vs');
+    await userEvent.type(predicateInput, 'ex:Vp');
+    await userEvent.type(objectInput, 'ex:Vo');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const edge = screen.getByTestId('triple-edge-0');
+    await userEvent.click(edge);
+
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
+      'ex:Vs'
+    );
+    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe(
+      'ex:Vp'
+    );
+    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe(
+      'ex:Vo'
+    );
+    expect(
+      (screen.getByLabelText(/note target/i) as HTMLSelectElement).value
+    ).toBe('triple');
+  });
 });

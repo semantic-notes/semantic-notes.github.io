@@ -299,7 +299,10 @@ function Home() {
           </div>
         )}
         {notes.length > 0 && (
-          <TripleVisualization triples={notes.map((n) => n.triple)} />
+          <TripleVisualization
+            triples={notes.map((n) => n.triple)}
+            onTripleClick={(t) => prefillFromTriple(t, 'triple')}
+          />
         )}
       </section>
     </div>
