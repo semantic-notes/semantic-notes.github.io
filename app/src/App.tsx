@@ -1,7 +1,14 @@
 import { useState, type FormEvent, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { expandCurie } from './namespaces';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from 'firebase/firestore';
 import { db } from './firebase';
 import TripleVisualization from './TripleVisualization';
 import { DataFactory, Parser, Writer } from 'n3';
@@ -14,10 +21,15 @@ function Home() {
   const [predicate, setPredicate] = useState('');
   const [object, setObject] = useState('');
   const [error, setError] = useState('');
-  const [triples, setTriples] = useState<Quad[]>([]);
+  interface TripleEntry {
+    id: string;
+    quad: Quad;
+  }
+  const [triples, setTriples] = useState<TripleEntry[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [predicates, setPredicates] = useState<string[]>([]);
   const [objects, setObjects] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const isTestEnv = import.meta.env.MODE === 'test';
 
   const serializeQuad = (q: Quad): Promise<string> => {
@@ -44,28 +56,40 @@ function Home() {
       expandedObject !== object || /^https?:/.test(expandedObject) || object.includes(':')
         ? namedNode(expandedObject)
         : literal(object);
-    const newTriple = createQuad(
+    const newQuad = createQuad(
       namedNode(expandedSubject),
       namedNode(expandedPredicate),
       objectTerm
     );
-    setTriples((prev) => [...prev, newTriple]);
-    if (!isTestEnv) {
-      try {
-        const nquad = await serializeQuad(newTriple);
-        await addDoc(collection(db, 'triples'), { nquad });
-      } catch (err) {
-        console.error(err);
+    if (editingId) {
+      setTriples((prev) =>
+        prev.map((t) => (t.id === editingId ? { id: editingId, quad: newQuad } : t))
+      );
+      if (!isTestEnv) {
+        try {
+          const nquad = await serializeQuad(newQuad);
+          await updateDoc(doc(db, 'triples', editingId), { nquad });
+        } catch (err) {
+          console.error(err);
+        }
       }
+      setEditingId(null);
+    } else {
+      let newId = Math.random().toString(36).slice(2);
+      if (!isTestEnv) {
+        try {
+          const nquad = await serializeQuad(newQuad);
+          const docRef = await addDoc(collection(db, 'triples'), { nquad });
+          newId = docRef.id;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      setTriples((prev) => [...prev, { id: newId, quad: newQuad }]);
     }
     setSubject('');
     setPredicate('');
     setObject('');
-    setSubjects((prev) => Array.from(new Set([...prev, expandedSubject])));
-    setPredicates((prev) =>
-      Array.from(new Set([...prev, expandedPredicate]))
-    );
-    setObjects((prev) => Array.from(new Set([...prev, objectTerm.value])));
   };
 
   const prefillFromTriple = (triple: Quad) => {
@@ -74,26 +98,39 @@ function Home() {
     setObject(triple.object.value);
   };
 
+  const handleDelete = async (id: string) => {
+    setTriples((prev) => prev.filter((t) => t.id !== id));
+    if (!isTestEnv) {
+      try {
+        await deleteDoc(doc(db, 'triples', id));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   useEffect(() => {
     if (isTestEnv) return;
     const loadTriples = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'triples'));
-        const loaded = snapshot.docs.map((d) =>
-          parseQuad((d.data() as { nquad: string }).nquad)
-        );
+        const loaded = snapshot.docs.map((d) => ({
+          id: d.id,
+          quad: parseQuad((d.data() as { nquad: string }).nquad),
+        }));
         setTriples(loaded);
-        setSubjects(Array.from(new Set(loaded.map((n) => n.subject.value))));
-        setPredicates(
-          Array.from(new Set(loaded.map((n) => n.predicate.value)))
-        );
-        setObjects(Array.from(new Set(loaded.map((n) => n.object.value))));
       } catch (err) {
         console.error(err);
       }
     };
     void loadTriples();
   }, [isTestEnv]);
+
+  useEffect(() => {
+    setSubjects(Array.from(new Set(triples.map((t) => t.quad.subject.value))));
+    setPredicates(Array.from(new Set(triples.map((t) => t.quad.predicate.value))));
+    setObjects(Array.from(new Set(triples.map((t) => t.quad.object.value))));
+  }, [triples]);
 
   return (
     <div className="app-container">
@@ -186,34 +223,48 @@ function Home() {
           <div>
             <h2>Registered Triples</h2>
             <ul className="triple-list">
-              {triples.map((t, i) => (
-                <li key={i} className="triple-card">
+              {triples.map((t) => (
+                <li key={t.id} className="triple-card">
                   <div className="triple-display">
                     <button
                       type="button"
                       className="triple-part-button"
                       title="Use subject"
-                      onClick={() => prefillFromTriple(t)}
+                      onClick={() => prefillFromTriple(t.quad)}
                     >
-                      {t.subject.value}
+                      {t.quad.subject.value}
                     </button>
                     <button
                       type="button"
                       className="triple-part-button"
                       title="Use predicate"
-                      onClick={() => prefillFromTriple(t)}
+                      onClick={() => prefillFromTriple(t.quad)}
                     >
-                      {t.predicate.value}
+                      {t.quad.predicate.value}
                     </button>
                     <button
                       type="button"
                       className="triple-part-button"
                       title="Use object"
-                      onClick={() => prefillFromTriple(t)}
+                      onClick={() => prefillFromTriple(t.quad)}
                     >
-                      {t.object.value}
+                      {t.quad.object.value}
                     </button>
-                    <span>({t.object.termType})</span>
+                    <span>({t.quad.object.termType})</span>
+                  </div>
+                  <div className="triple-actions">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        prefillFromTriple(t.quad);
+                        setEditingId(t.id);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button type="button" onClick={() => handleDelete(t.id)}>
+                      Delete
+                    </button>
                   </div>
                 </li>
               ))}
@@ -222,7 +273,7 @@ function Home() {
         )}
         {triples.length > 0 && (
           <TripleVisualization
-            triples={triples}
+            triples={triples.map((t) => t.quad)}
             onTripleClick={(t) => prefillFromTriple(t)}
           />
         )}

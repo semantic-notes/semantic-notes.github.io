@@ -123,4 +123,45 @@ describe('App', () => {
     expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe('ex:Vp');
     expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe('ex:Vo');
   });
+
+  it('allows editing and deleting triples and refreshes suggestions', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:S1');
+    await userEvent.type(predicateInput, 'ex:p1');
+    await userEvent.type(objectInput, 'ex:O1');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    await userEvent.type(subjectInput, 'ex:S2');
+    await userEvent.type(predicateInput, 'ex:p2');
+    await userEvent.type(objectInput, 'ex:O2');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const editButtons = screen.getAllByRole('button', { name: /edit/i });
+    await userEvent.click(editButtons[0]);
+    const subjAfterEdit = screen.getByLabelText(/subject/i) as HTMLInputElement;
+    await userEvent.clear(subjAfterEdit);
+    await userEvent.type(subjAfterEdit, 'ex:S1e');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const subjectButtons = screen.getAllByTitle('Use subject');
+    expect(subjectButtons[0].textContent).toBe('ex:S1e');
+    const subjectOptions = screen.getByTestId('subject-options');
+    expect(subjectOptions.querySelector('option[value="ex:S1e"]')).toBeTruthy();
+    expect(subjectOptions.querySelector('option[value="ex:S1"]')).toBeFalsy();
+
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    await userEvent.click(deleteButtons[1]);
+
+    expect(screen.queryByText('ex:S2')).toBeNull();
+    expect(subjectOptions.querySelector('option[value="ex:S2"]')).toBeFalsy();
+  });
 });
