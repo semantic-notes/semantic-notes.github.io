@@ -1,4 +1,24 @@
 import type { Quad } from '@rdfjs/types';
+import { useMemo } from 'react';
+import {
+  forceCenter,
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+} from 'd3-force';
+
+interface VizNode {
+  id: string;
+  x: number;
+  y: number;
+}
+
+interface VizEdge {
+  source: VizNode;
+  target: VizNode;
+  label: string;
+  triple: Quad;
+}
 
 interface TripleVisualizationProps {
   triples: Quad[];
@@ -11,23 +31,48 @@ export default function TripleVisualization({
   onTripleClick,
   focusNode,
 }: TripleVisualizationProps) {
-  const nodeIds = Array.from(
-    new Set(triples.flatMap((t) => [t.subject.value, t.object.value]))
-  );
-  const nodes = nodeIds.map((id, idx) => ({
-    id,
-    x: 100 + (idx % 5) * 150,
-    y: 100 + Math.floor(idx / 5) * 100,
-  }));
-  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-  const edges = triples.map((t) => ({
-    source: nodeMap.get(t.subject.value)!,
-    target: nodeMap.get(t.object.value)!,
-    label: t.predicate.value,
-    triple: t,
-  }));
-  const width = Math.min(5, nodeIds.length) * 150 + 100;
-  const height = Math.ceil(nodeIds.length / 5) * 100 + 100;
+  const width = 600;
+  const height = 400;
+
+  const { nodes, edges } = useMemo<{ nodes: VizNode[]; edges: VizEdge[] }>(() => {
+    const nodeIds = Array.from(
+      new Set(triples.flatMap((t) => [t.subject.value, t.object.value]))
+    );
+    const nodes: VizNode[] = nodeIds.map((id) => ({
+      id,
+      x: width / 2,
+      y: height / 2,
+    }));
+    const edges = triples.map((t) => ({
+      source: t.subject.value,
+      target: t.object.value,
+      label: t.predicate.value,
+      triple: t,
+    }));
+
+    const simulation = forceSimulation(nodes)
+      .force(
+        'link',
+        forceLink(edges)
+          .id((d: any) => d.id)
+          .distance(100)
+      )
+      .force('charge', forceManyBody().strength(-200))
+      .force('center', forceCenter(width / 2, height / 2))
+      .stop();
+
+    for (let i = 0; i < 300; i++) {
+      simulation.tick();
+    }
+
+    const positionedEdges: VizEdge[] = edges.map((e) => ({
+      ...e,
+      source: e.source as VizNode,
+      target: e.target as VizNode,
+    }));
+
+    return { nodes, edges: positionedEdges };
+  }, [triples]);
 
   return (
     <div>
