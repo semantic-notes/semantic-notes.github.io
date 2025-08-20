@@ -20,4 +20,4 @@ Thank you for your interest in contributing to Semantic Notes! Contributions are
 - [ ] Added or updated tests (unit, invariants).
 - [ ] Updated documentation (README/SPECS/MODEL/ARCH).
 
-Please remember to be respectful and constructive in all interactions. Together we can build a powerful and user-friendly semantic note-taking tool!
+Please remember to be respectful and constructive in all interactions. Together we can build a powerful and user-friendly ontology builder!
