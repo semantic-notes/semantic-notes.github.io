@@ -71,6 +71,22 @@ function Home() {
     );
   };
 
+  const prefillFromTriple = (
+    triple: {
+      subject: string;
+      predicate: string;
+      object: string;
+      objectType: string;
+    },
+    target: NoteTarget
+  ) => {
+    setSubject(triple.subject);
+    setPredicate(triple.predicate);
+    setObject(triple.object);
+    setObjectType(triple.objectType);
+    setNoteTarget(target);
+  };
+
   return (
     <div className="app-container">
       <section className="form-section">
@@ -207,9 +223,41 @@ function Home() {
             <ul className="note-list">
               {notes.map((n, i) => (
                 <li key={i} className="note-card">
-                  <pre>
-                    {n.triple.subject} {n.triple.predicate} {n.triple.object} ({n.triple.objectType})
-                  </pre>
+                  <div className="triple-display">
+                    <button
+                      type="button"
+                      className="triple-part-button"
+                      title="Add note about this subject"
+                      onClick={() => prefillFromTriple(n.triple, 'subject')}
+                    >
+                      {n.triple.subject}
+                    </button>
+                    <button
+                      type="button"
+                      className="triple-part-button"
+                      title="Add note about this predicate"
+                      onClick={() => prefillFromTriple(n.triple, 'predicate')}
+                    >
+                      {n.triple.predicate}
+                    </button>
+                    <button
+                      type="button"
+                      className="triple-part-button"
+                      title="Add note about this object"
+                      onClick={() => prefillFromTriple(n.triple, 'object')}
+                    >
+                      {n.triple.object}
+                    </button>
+                    <span>({n.triple.objectType})</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="triple-note-button"
+                    title="Add note about this triple"
+                    onClick={() => prefillFromTriple(n.triple, 'triple')}
+                  >
+                    Add note
+                  </button>
                   {n.note && (
                     <pre>Note on {n.noteTarget}: {n.note}</pre>
                   )}
