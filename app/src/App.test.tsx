@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
@@ -163,5 +163,32 @@ describe('App', () => {
 
     expect(screen.queryByText('ex:S2')).toBeNull();
     expect(subjectOptions.querySelector('option[value="ex:S2"]')).toBeFalsy();
+  });
+
+  it('renders concept tree and selects concepts', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:Child');
+    await userEvent.type(predicateInput, 'skos:broader');
+    await userEvent.type(objectInput, 'ex:Parent');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const tree = await screen.findByTestId('concept-tree');
+    const childBtn = within(tree).getByRole('button', { name: 'ex:Child' });
+    await userEvent.click(childBtn);
+
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
+      'ex:Child'
+    );
+    const viz = screen.getByTestId('triple-visualization');
+    expect(viz.querySelector('circle[fill="yellow"]')).toBeTruthy();
   });
 });
