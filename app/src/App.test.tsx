@@ -48,6 +48,10 @@ describe('App', () => {
 
     const subjectOptions = screen.getByTestId('subject-options');
     expect(subjectOptions.querySelector('option[value="ex:Subject"]')).toBeTruthy();
+
+    const viz = screen.getByTestId('triple-visualization');
+    expect(viz.textContent).toContain('ex:Subject');
+    expect(viz.textContent).toContain('ex:Object');
   });
 
   it('expands known namespace prefixes when saving triples', async () => {
@@ -68,13 +72,18 @@ describe('App', () => {
     await userEvent.selectOptions(objectTypeSelect, 'class');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    expect(screen.getByTitle('Add note about this subject').textContent).toBe(
+    const subjectButtons = screen.getAllByTitle('Add note about this subject');
+    expect(subjectButtons[subjectButtons.length - 1].textContent).toBe(
       'ex:Thing'
     );
-    expect(
-      screen.getByTitle('Add note about this predicate').textContent
-    ).toBe('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-    expect(screen.getByTitle('Add note about this object').textContent).toBe(
+    const predicateButtons = screen.getAllByTitle(
+      'Add note about this predicate'
+    );
+    expect(predicateButtons[predicateButtons.length - 1].textContent).toBe(
+      'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+    );
+    const objectButtons = screen.getAllByTitle('Add note about this object');
+    expect(objectButtons[objectButtons.length - 1].textContent).toBe(
       'http://www.w3.org/2004/02/skos/core#Concept'
     );
   });
@@ -106,8 +115,8 @@ describe('App', () => {
     await userEvent.type(objectInput, 'ex:O1');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
-    const subjectBtn = screen.getByTitle('Add note about this subject');
-    await userEvent.click(subjectBtn);
+    const subjectBtns = screen.getAllByTitle('Add note about this subject');
+    await userEvent.click(subjectBtns[subjectBtns.length - 1]);
 
     expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe(
       'ex:S1'
