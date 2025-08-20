@@ -3,11 +3,13 @@ import type { Quad } from '@rdfjs/types';
 interface TripleVisualizationProps {
   triples: Quad[];
   onTripleClick?: (triple: Quad) => void;
+  focusNode?: string;
 }
 
 export default function TripleVisualization({
   triples,
   onTripleClick,
+  focusNode,
 }: TripleVisualizationProps) {
   const nodeIds = Array.from(
     new Set(triples.flatMap((t) => [t.subject.value, t.object.value]))
@@ -57,7 +59,13 @@ export default function TripleVisualization({
         ))}
         {nodes.map((n) => (
           <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r={20} fill="white" stroke="black" />
+            <circle
+              cx={n.x}
+              cy={n.y}
+              r={20}
+              fill={n.id === focusNode ? 'yellow' : 'white'}
+              stroke="black"
+            />
             <text
               x={n.x}
               y={n.y}

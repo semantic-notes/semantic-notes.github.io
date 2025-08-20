@@ -12,6 +12,7 @@ import {
 import { db } from './firebase';
 import TripleVisualization from './TripleVisualization';
 import EntityForm from './EntityForm';
+import ConceptTree from './ConceptTree';
 import { DataFactory, Parser, Writer } from 'n3';
 import type { Quad } from '@rdfjs/types';
 
@@ -31,6 +32,7 @@ function Home() {
   const [predicates, setPredicates] = useState<string[]>([]);
   const [objects, setObjects] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [focusedConcept, setFocusedConcept] = useState<string | null>(null);
   const isTestEnv = import.meta.env.MODE === 'test';
 
   const serializeQuad = (q: Quad): Promise<string> => {
@@ -273,9 +275,19 @@ function Home() {
           </div>
         )}
         {triples.length > 0 && (
+          <ConceptTree
+            triples={triples.map((t) => t.quad)}
+            onSelect={(iri) => {
+              setSubject(iri);
+              setFocusedConcept(iri);
+            }}
+          />
+        )}
+        {triples.length > 0 && (
           <TripleVisualization
             triples={triples.map((t) => t.quad)}
             onTripleClick={(t) => prefillFromTriple(t)}
+            focusNode={focusedConcept ?? undefined}
           />
         )}
       </section>
