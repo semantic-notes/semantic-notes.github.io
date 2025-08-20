@@ -19,4 +19,5 @@ When using GitHub Copilot or other LLMs for code generation:
 
 - Do **not** modify files outside intended module boundaries. Respect the architecture defined in `ARCHITECTURE.md`.
 - When adding a class or property, update both the OWL file (`content/ontology/`) and the corresponding SKOS file (`content/skos/`). Update SHACL shapes if constraints change.
+- Cross-check AI-assisted changes against `SPECS.md` and existing tests to ensure features are not removed or degraded.
 - Always run tests (`pnpm test`) locally before opening a pull request.
