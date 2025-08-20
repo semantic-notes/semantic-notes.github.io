@@ -32,6 +32,7 @@ function Home() {
   const [subjects, setSubjects] = useState<string[]>([]);
   const [predicates, setPredicates] = useState<string[]>([]);
   const [objects, setObjects] = useState<string[]>([]);
+  const isTestEnv = import.meta.env.MODE === 'test';
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -56,7 +57,9 @@ function Home() {
       },
     };
     setNotes((prev) => [...prev, newNote]);
-    void addDoc(collection(db, 'notes'), newNote).catch(console.error);
+    if (!isTestEnv) {
+      void addDoc(collection(db, 'notes'), newNote).catch(console.error);
+    }
     setNote('');
     setNoteTarget('triple');
     setStructure('');
@@ -91,6 +94,7 @@ function Home() {
   };
 
   useEffect(() => {
+    if (isTestEnv) return;
     const loadNotes = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'notes'));
@@ -110,7 +114,7 @@ function Home() {
       }
     };
     void loadNotes();
-  }, []);
+  }, [isTestEnv]);
 
   return (
     <div className="app-container">
