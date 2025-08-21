@@ -67,8 +67,8 @@ export default function TripleVisualization({
 
     const positionedEdges: VizEdge[] = edges.map((e) => ({
       ...e,
-      source: e.source as VizNode,
-      target: e.target as VizNode,
+      source: e.source as unknown as VizNode,
+      target: e.target as unknown as VizNode,
     }));
 
     return { nodes, edges: positionedEdges };
