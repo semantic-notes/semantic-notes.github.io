@@ -187,6 +187,30 @@ describe('App', () => {
     expect(subjectOptions.querySelector('option[value="ex:S2"]')).toBeFalsy();
   });
 
+  it('displays navigation tree alongside note input form on the home page', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:Nav');
+    await userEvent.type(predicateInput, 'skos:broader');
+    await userEvent.type(objectInput, 'ex:Parent');
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    const tree = await screen.findByTestId('concept-tree');
+    expect(within(tree).getByRole('button', { name: 'ex:Nav' })).toBeTruthy();
+
+    expect(screen.getByLabelText(/subject/i)).toBeTruthy();
+    expect(screen.getByLabelText(/predicate/i)).toBeTruthy();
+    expect(screen.getByLabelText(/^object$/i)).toBeTruthy();
+  });
+
   it('renders concept tree and selects concepts', async () => {
     render(
       <MemoryRouter>
