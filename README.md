@@ -9,6 +9,11 @@ Semantic, AI‑assisted ontology building for OWL and SKOS.
 
 These capabilities must remain supported when extending the codebase.
 
+The starting page always displays all saved notes as an RDF graph and a tree view
+for navigation, and it includes a form to insert new notes. Future changes
+should preserve this combination of visualization, navigation and input on the
+home page.
+
 This project is a proof‑of‑concept for a client‑side web application that lets you
 create and manage ontologies and vocabularies using OWL and SKOS. Annotations are
 recorded as RDF triples using annotation or note properties. A pluggable reasoning layer provides basic RDFS/SHACL checks and
