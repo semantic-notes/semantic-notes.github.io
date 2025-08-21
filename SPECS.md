@@ -7,6 +7,8 @@
 - Add annotations through RDF triples using dedicated annotation properties.
 - Import/export TriG datasets as whole or per-graph; exports include a manifest recording each named graph’s IRI, type, and checksum. `scripts/import-dataset.ts` validates and merges data while enforcing SHACL and SPARQL invariants.
 - AI assistance (local-first) provides label suggestions, natural language to SPARQL drafts and mapping hints.
+- The home page shows all existing notes with both an RDF graph visualization and a
+  tree view for navigation, and includes a form for inserting new notes.
 
 ## Non-functional
 
