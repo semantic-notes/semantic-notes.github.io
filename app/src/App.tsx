@@ -17,6 +17,7 @@ import EntityForm from './EntityForm';
 import ConceptTree from './ConceptTree';
 import { DataFactory, Parser, Writer } from 'n3';
 import type { Quad } from '@rdfjs/types';
+import type { QuadExt } from 'rdf-ext/lib/Quad';
 
 function Home() {
   const { namedNode, literal, quad: createQuad } = DataFactory;
@@ -41,7 +42,9 @@ function Home() {
     const writer = new Writer({ format: 'N-Quads' });
     writer.addQuad(q);
     return new Promise((resolve, reject) =>
-      writer.end((err, res) => (err ? reject(err) : resolve(res)))
+      writer.end((err: Error | null, res?: string) =>
+        err ? reject(err) : resolve(res ?? '')
+      )
     );
   };
 
@@ -69,9 +72,9 @@ function Home() {
     const data = rdf.dataset();
     for (const t of triples) {
       if (editingId === t.id) continue;
-      data.add(t.quad);
+      data.add(t.quad as unknown as QuadExt);
     }
-    data.add(newQuad);
+    data.add(newQuad as unknown as QuadExt);
     const report = await shaclValidator.validate(data);
     if (!report.conforms) {
       const messages = report.results

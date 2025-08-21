@@ -1,4 +1,3 @@
-import { URL } from 'url';
 
 /**
  * Reads the BASE_IRI from the environment and validates it.

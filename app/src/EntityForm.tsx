@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { DataFactory, Writer } from 'n3';
 import type { Quad } from '@rdfjs/types';
+import type { QuadExt } from 'rdf-ext/lib/Quad';
 import rdf from 'rdf-ext';
 import shaclValidator from './shacl';
 import { db } from './firebase';
@@ -19,7 +20,9 @@ export default function EntityForm() {
     const writer = new Writer({ format: 'N-Quads' });
     writer.addQuad(q);
     return new Promise((resolve, reject) =>
-      writer.end((err, res) => (err ? reject(err) : resolve(res)))
+      writer.end((err: Error | null, res?: string) =>
+        err ? reject(err) : resolve(res ?? '')
+      )
     );
   };
 
@@ -69,7 +72,7 @@ export default function EntityForm() {
     }
 
     const data = rdf.dataset();
-    data.addAll(triples);
+    data.addAll(triples as unknown as QuadExt[]);
     const report = await shaclValidator.validate(data);
     if (!report.conforms) {
       const messages = report.results
