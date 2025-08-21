@@ -6,10 +6,10 @@ import shaclValidator from './shacl';
 import {
   collection,
   addDoc,
-  getDocs,
   doc,
   updateDoc,
   deleteDoc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import TripleVisualization from './TripleVisualization';
@@ -133,19 +133,22 @@ function Home() {
 
   useEffect(() => {
     if (isTestEnv) return;
-    const loadTriples = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, 'triples'));
+    const unsubscribe = onSnapshot(
+      collection(db, 'triples'),
+      (snapshot) => {
         const loaded = snapshot.docs.map((d) => ({
           id: d.id,
           quad: parseQuad((d.data() as { nquad: string }).nquad),
         }));
         setTriples(loaded);
-      } catch (err) {
+      },
+      (err) => {
         console.error(err);
       }
+    );
+    return () => {
+      unsubscribe();
     };
-    void loadTriples();
   }, [isTestEnv]);
 
   useEffect(() => {
