@@ -40,6 +40,28 @@ describe('App', () => {
     expect(viz.textContent).toContain('ex:Object');
   });
 
+  it('allows selecting literal object type', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+    const objectType = screen.getByLabelText(/object type/i) as HTMLSelectElement;
+
+    await userEvent.type(subjectInput, 'ex:S');
+    await userEvent.type(predicateInput, 'ex:p');
+    await userEvent.type(objectInput, 'Literal value');
+    await userEvent.selectOptions(objectType, 'literal');
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
+
+    expect(screen.getByTitle('Use object').textContent).toBe('Literal value');
+    expect(screen.getByText('(Literal)')).toBeTruthy();
+  });
+
   it('expands known namespace prefixes when saving triples', async () => {
     render(
       <MemoryRouter>
@@ -96,6 +118,7 @@ describe('App', () => {
     expect(screen.getByLabelText(/subject/i).getAttribute('title')).toBeTruthy();
     expect(screen.getByLabelText(/predicate/i).getAttribute('title')).toBeTruthy();
     expect(screen.getByLabelText(/^object$/i).getAttribute('title')).toBeTruthy();
+    expect(screen.getByLabelText(/object type/i).getAttribute('title')).toBeTruthy();
   });
 
   it('prefills form fields when triple parts are clicked', async () => {
