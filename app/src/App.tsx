@@ -207,7 +207,21 @@ function Home() {
               ))}
             </datalist>
           </label>
-          <button type="submit">Save</button>
+          <button type="submit">{editingId ? 'Update' : 'Save'}</button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setSubject('');
+                setPredicate('');
+                setObject('');
+                setError('');
+              }}
+            >
+              Cancel
+            </button>
+          )}
         </form>
         {error && (
           <p className="error" role="alert">
@@ -216,6 +230,9 @@ function Home() {
         )}
       </section>
       <section className="data-section">
+        {triples.length === 0 && (
+          <p>No triples yet. Use the form above to add one.</p>
+        )}
         {subjects.length > 0 && (
           <div>
             <h2>Registered Subjects</h2>
