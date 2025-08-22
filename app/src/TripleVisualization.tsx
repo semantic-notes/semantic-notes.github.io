@@ -78,6 +78,19 @@ export default function TripleVisualization({
     <div>
       <h2>Triple Visualization</h2>
       <svg width={width} height={height} data-testid="triple-visualization">
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="10"
+            refY="3.5"
+            orient="auto"
+            fill="black"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" />
+          </marker>
+        </defs>
         {edges.map((e, i) => (
           <g
             key={i}
@@ -91,6 +104,7 @@ export default function TripleVisualization({
               x2={e.target.x}
               y2={e.target.y}
               stroke="black"
+              markerEnd="url(#arrowhead)"
             />
             <text
               x={(e.source.x + e.target.x) / 2}
