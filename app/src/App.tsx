@@ -25,6 +25,8 @@ function Home() {
   const [subject, setSubject] = useState('');
   const [predicate, setPredicate] = useState('');
   const [object, setObject] = useState('');
+  type ObjectType = 'class' | 'literal';
+  const [objectType, setObjectType] = useState<ObjectType>('class');
   const [error, setError] = useState('');
   interface TripleEntry {
     id: string;
@@ -59,11 +61,12 @@ function Home() {
     setError('');
     const expandedSubject = expandCurie(subject);
     const expandedPredicate = expandCurie(predicate);
-    const expandedObject = expandCurie(object);
-    const objectTerm =
-      expandedObject !== object || /^https?:/.test(expandedObject) || object.includes(':')
-        ? namedNode(expandedObject)
-        : literal(object);
+    let objectTerm;
+    if (objectType === 'class') {
+      objectTerm = namedNode(expandCurie(object));
+    } else {
+      objectTerm = literal(object);
+    }
     const newQuad = createQuad(
       namedNode(expandedSubject),
       namedNode(expandedPredicate),
@@ -112,12 +115,14 @@ function Home() {
     setSubject('');
     setPredicate('');
     setObject('');
+    setObjectType('class');
   };
 
   const prefillFromTriple = (triple: Quad) => {
     setSubject(triple.subject.value);
     setPredicate(triple.predicate.value);
     setObject(triple.object.value);
+    setObjectType(triple.object.termType === 'NamedNode' ? 'class' : 'literal');
   };
 
   const handleDelete = async (id: string) => {
@@ -207,6 +212,17 @@ function Home() {
               ))}
             </datalist>
           </label>
+          <label>
+            Object Type
+            <select
+              value={objectType}
+              onChange={(e) => setObjectType(e.target.value as ObjectType)}
+              title="Select if the object is a class IRI or a literal value"
+            >
+              <option value="class">Class</option>
+              <option value="literal">Literal</option>
+            </select>
+          </label>
           <button type="submit">{editingId ? 'Update' : 'Save'}</button>
           {editingId && (
             <button
@@ -216,6 +232,7 @@ function Home() {
                 setSubject('');
                 setPredicate('');
                 setObject('');
+                setObjectType('class');
                 setError('');
               }}
             >
