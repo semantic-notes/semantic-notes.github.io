@@ -162,6 +162,8 @@ describe('App', () => {
     await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const edge = screen.getByTestId('triple-edge-0');
+    const line = edge.querySelector('line');
+    expect(line?.getAttribute('marker-end')).toBe('url(#arrowhead)');
     await userEvent.click(edge);
 
     expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe('ex:Vs');
