@@ -23,7 +23,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Subject');
     await userEvent.type(predicateInput, 'ex:predicate');
     await userEvent.type(objectInput, 'ex:Object');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     expect(screen.getByTitle('Use subject').textContent).toBe('ex:Subject');
     expect(screen.getByTitle('Use predicate').textContent).toBe('ex:predicate');
@@ -54,7 +54,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Thing');
     await userEvent.type(predicateInput, 'rdf:type');
     await userEvent.type(objectInput, 'owl:Class');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const predicateButtons = screen.getAllByTitle('Use predicate');
     expect(predicateButtons[predicateButtons.length - 1].textContent).toBe(
@@ -80,7 +80,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Thing');
     await userEvent.type(predicateInput, 'rdf:type');
     await userEvent.type(objectInput, 'skos:Concept');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     expect(screen.getByRole('alert').textContent).toMatch(/Less than 1/);
     expect(screen.queryByTitle('Use subject')).toBeNull();
@@ -112,7 +112,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:S1');
     await userEvent.type(predicateInput, 'ex:p1');
     await userEvent.type(objectInput, 'ex:O1');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const subjectBtns = screen.getAllByTitle('Use subject');
     await userEvent.click(subjectBtns[subjectBtns.length - 1]);
@@ -136,7 +136,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Vs');
     await userEvent.type(predicateInput, 'ex:Vp');
     await userEvent.type(objectInput, 'ex:Vo');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const edge = screen.getByTestId('triple-edge-0');
     await userEvent.click(edge);
@@ -160,19 +160,19 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:S1');
     await userEvent.type(predicateInput, 'ex:p1');
     await userEvent.type(objectInput, 'ex:O1');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     await userEvent.type(subjectInput, 'ex:S2');
     await userEvent.type(predicateInput, 'ex:p2');
     await userEvent.type(objectInput, 'ex:O2');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const editButtons = screen.getAllByRole('button', { name: /edit/i });
     await userEvent.click(editButtons[0]);
     const subjAfterEdit = screen.getByLabelText(/subject/i) as HTMLInputElement;
     await userEvent.clear(subjAfterEdit);
     await userEvent.type(subjAfterEdit, 'ex:S1e');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const subjectButtons = screen.getAllByTitle('Use subject');
     expect(subjectButtons[0].textContent).toBe('ex:S1e');
@@ -201,7 +201,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Nav');
     await userEvent.type(predicateInput, 'skos:broader');
     await userEvent.type(objectInput, 'ex:Parent');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const tree = await screen.findByTestId('concept-tree');
     expect(within(tree).getByRole('button', { name: 'ex:Nav' })).toBeTruthy();
@@ -209,6 +209,32 @@ describe('App', () => {
     expect(screen.getByLabelText(/subject/i)).toBeTruthy();
     expect(screen.getByLabelText(/predicate/i)).toBeTruthy();
     expect(screen.getByLabelText(/^object$/i)).toBeTruthy();
+  });
+
+  it('allows cancelling edits and resets the form', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+
+    const subjectInput = screen.getByLabelText(/subject/i);
+    const predicateInput = screen.getByLabelText(/predicate/i);
+    const objectInput = screen.getByLabelText(/^object$/i);
+
+    await userEvent.type(subjectInput, 'ex:S1');
+    await userEvent.type(predicateInput, 'ex:p1');
+    await userEvent.type(objectInput, 'ex:O1');
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
+
+    await userEvent.click(screen.getByRole('button', { name: /edit/i }));
+    expect(screen.getByRole('button', { name: /update/i })).toBeTruthy();
+
+    await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    expect(screen.getByRole('button', { name: /save/i })).toBeTruthy();
+    expect((screen.getByLabelText(/subject/i) as HTMLInputElement).value).toBe('');
+    expect((screen.getByLabelText(/predicate/i) as HTMLInputElement).value).toBe('');
+    expect((screen.getByLabelText(/^object$/i) as HTMLInputElement).value).toBe('');
   });
 
   it('renders concept tree and selects concepts', async () => {
@@ -225,7 +251,7 @@ describe('App', () => {
     await userEvent.type(subjectInput, 'ex:Child');
     await userEvent.type(predicateInput, 'skos:broader');
     await userEvent.type(objectInput, 'ex:Parent');
-    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+    await userEvent.click(screen.getByRole('button', { name: /(save|update)/i }));
 
     const tree = await screen.findByTestId('concept-tree');
     const childBtn = within(tree).getByRole('button', { name: 'ex:Child' });
